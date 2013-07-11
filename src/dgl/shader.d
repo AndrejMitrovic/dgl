@@ -94,27 +94,27 @@ private struct ShaderImpl
         enum elemCount = 1;
 
         verify!glShaderSource(_shaderID, elemCount, &shaderPtr, &shaderLen);
-        compileShader();
+        this.compile();
     }
 
-    private void compileShader()
+    private void compile()
     {
         verify!glCompileShader(_shaderID);
 
         GLint status;
         verify!glGetShaderiv(_shaderID, GL_COMPILE_STATUS, &status);
+        if (status == GL_TRUE)
+            return;
 
-        if (status == GL_FALSE)
-        {
-            GLint logLength;
-            verify!glGetShaderiv(_shaderID, GL_INFO_LOG_LENGTH, &logLength);
+        /* read the error log and throw */
+        GLint logLength;
+        verify!glGetShaderiv(_shaderID, GL_INFO_LOG_LENGTH, &logLength);
 
-            GLchar[] logBuff = new GLchar[logLength];
-            verify!glGetShaderInfoLog(_shaderID, logLength, null, logBuff.ptr);
+        GLchar[] logBuff = new GLchar[logLength];
+        verify!glGetShaderInfoLog(_shaderID, logLength, null, logBuff.ptr);
 
-            auto log = logBuff[0 .. logLength - 1];
-            throw new ShaderException(_fileName, log);
-        }
+        auto log = logBuff[0 .. logLength - 1];
+        throw new ShaderException(_fileName, log);
     }
 
     ~this()
