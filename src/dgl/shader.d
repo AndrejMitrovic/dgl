@@ -8,6 +8,7 @@ module dgl.shader;
 
 import std.file;
 import std.exception;
+import std.path;
 import std.stdio;
 import std.string;
 import std.typecons;
@@ -37,15 +38,25 @@ enum ShaderType
 ///
 class ShaderException : Exception
 {
-    this(in char[] shaderName, in char[] log)
+    this(ShaderType shaderType, in char[] shaderName, in char[] shaderFile, in char[] log)
     {
         this.shaderName = shaderName;
-        string error = format("Failed to compileShader shader '%s':\n%s", shaderName, log);
+        this.shaderFile = shaderFile;
+
+        string error =
+            format("Failed to compile shader '%s' of type '%s'%s:\n%s",
+                   shaderName, shaderType,
+                   shaderFile !is null ? format(" from file '%s'", shaderFile) : "",
+                   log);
+
         super(error);
     }
 
-    /// The file the shader was read from.
+    /// The shader name. If shader was read from disk it is the base name of the file name.
     const(char)[] shaderName;
+
+    /// The shader file. If the shader was read from memory it will be empty.
+    const(char)[] shaderFile;
 }
 
 /**
@@ -59,11 +70,27 @@ struct Shader
     /**
         Read the shader of type $(D shaderType) from
         the file $(D fileName) and compile it.
+
+        The shader name will be equal to $(D fileName).
     */
     this(ShaderType shaderType, in char[] fileName)
     {
         _data = Data(shaderType, fileName);
     }
+
+    /**
+        Read the shader of type $(D shaderType) from
+        the shader code in $(D shaderText). The shader
+        name will be set to $(D shaderName).
+
+        This is the constructor version which doesn't
+        read the shader code from disk, but from the
+        in-memory buffer $(D shaderText).
+    */
+    //~ this(ShaderType shaderType, in char[] shaderName, in char[] shaderText)
+    //~ {
+        //~ _data = Data(shaderType, shaderName, shaderText);
+    //~ }
 
     /** Explicitly delete the OpenGL shader. */
     void remove()
@@ -85,15 +112,16 @@ private:
 
 private struct ShaderImpl
 {
-    this(ShaderType shaderType, in char[] shaderName)
+    this(ShaderType shaderType, in char[] shaderFile)
     {
         require(shaderType.isValidEnum, "Shader type is uninitialized.");
-        require(shaderName.exists, "Shader file '%s' does not exist.", shaderName);
+        require(shaderFile.exists, "Shader file '%s' does not exist.", shaderFile);
 
-        _shaderName = shaderName;
+        _shaderType = shaderType;
+        _shaderName = shaderFile.baseName;
         _shaderID = verify!glCreateShader(cast(GLenum)shaderType);
 
-        string shaderText = shaderName.readText();
+        string shaderText = shaderFile.readText();
 
         auto shaderPtr = shaderText.ptr;
         auto shaderLen = cast(int)shaderText.length;
@@ -120,7 +148,7 @@ private struct ShaderImpl
         verify!glGetShaderInfoLog(_shaderID, logLength, null, logBuff.ptr);
 
         auto log = logBuff[0 .. logLength - 1];
-        throw new ShaderException(_shaderName, log);
+        throw new ShaderException(_shaderType, _shaderName, _shaderFile, log);
     }
 
     ~this()
@@ -143,9 +171,11 @@ private struct ShaderImpl
     /// Should never perform assign
     @disable void opAssign(typeof(this));
 
-    // data
+    /* Shader data. */
     GLuint _shaderID = invalidShaderID;
+    ShaderType _shaderType;
     const(char)[] _shaderName;
+    const(char)[] _shaderFile;
 
     // sentinel
     private enum invalidShaderID = GLuint.max;

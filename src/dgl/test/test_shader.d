@@ -28,9 +28,15 @@ unittest
     // throw on no shader type
     Shader(ShaderType.invalid, testShaders[0].vertex).assertErrorsWith("Shader type is uninitialized.");
 
-    // throw on invalid shader source
-    Shader(ShaderType.vertex, badShaders[0].vertex)
-        .getException!ShaderException.shaderName.assertEqual(badShaders[0].vertex);
+    // throw on bad shader from file
+    auto exc = Shader(ShaderType.vertex, badShaders[0].vertex).getException!ShaderException;
+    exc.shaderName.assertEqual(badShaders[0].vertex);
+    exc.shaderFile.assertEmpty();
+
+    // throw on bad shader from memory
+    //~ auto exc = Shader(ShaderType.vertex, badShaders[0].vertex).getException!ShaderException;
+    //~ exc.shaderName.assertEqual(badShaders[0].vertex);
+    //~ exc.shaderFile.assertEmpty();
 
     // check init and copying
     auto shader1 = Shader(ShaderType.vertex, testShaders[0].vertex);
