@@ -86,7 +86,7 @@ private:
             compileShader();
         }
 
-        void compileShader()
+        private void compileShader()
         {
             verify!glCompileShader(_shaderID);
 
@@ -101,7 +101,7 @@ private:
                 GLchar[] logBuff = new GLchar[logLength];
                 verify!glGetShaderInfoLog(_shaderID, logLength, null, logBuff.ptr);
 
-                string log = assumeUnique(logBuff[0 .. logLength - 1]);
+                auto log = logBuff[0 .. logLength - 1];
                 throw new ShaderException(_fileName, log);
             }
         }
@@ -111,12 +111,10 @@ private:
             remove();
         }
 
-        void remove()
+        private void remove()
         {
             if (_shaderID != GLuint.max)
-            {
-                glDeleteShader(_shaderID);
-            }
+                verify!glDeleteShader(_shaderID);
         }
 
         /// Should never perform copy
