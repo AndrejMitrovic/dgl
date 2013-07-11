@@ -29,5 +29,6 @@ unittest
     GLBuffer([1, 2], UsageHint.init).assertErrorsWith("Usage hint is uninitialized.");
 
     //
-    GLBuffer([1, 2], UsageHint.staticDraw);
+    auto buffer = GLBuffer([1, 2], UsageHint.staticDraw);
+    //~ buffer.bind
 }

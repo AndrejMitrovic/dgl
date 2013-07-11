@@ -14,6 +14,7 @@ import minilib.core.test;
 
 import derelict.opengl3.gl3;
 
+import dgl.attribute;
 import dgl.test.util;
 
 /// All possible OpenGL usage hints
@@ -43,6 +44,17 @@ struct GLBuffer
         _data = Data(buffer, usageHint);
     }
 
+    /** Bind this buffer to an attribute. */
+    void bind(Attribute attribute, int size, GLenum type, bool normalized, int stride, int offset)
+    {
+        _data.bind(attribute, size, type, cast(GLboolean)normalized, stride, offset);
+    }
+
+    void unbind()
+    {
+        _data.unbind();
+    }
+
     /** Explicitly delete the OpenGL buffer. */
     void remove()
     {
@@ -70,6 +82,17 @@ private struct GLBufferImpl
     ~this()
     {
         remove();
+    }
+
+    void bind(Attribute attribute, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLsizei offset)
+    {
+        verify!glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
+        verify!glVertexAttribPointer(cast(GLint)attribute.location, size, type, normalized, stride, cast(void*)offset);
+    }
+
+    void unbind()
+    {
+        verify!glBindBuffer(GL_ARRAY_BUFFER, nullBufferID);
     }
 
     private void remove()

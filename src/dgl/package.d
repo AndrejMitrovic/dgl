@@ -8,6 +8,7 @@ module dgl;
 
 public
 {
+    import dgl.attribute;
     import dgl.buffer;
     import dgl.program;
     import dgl.shader;
