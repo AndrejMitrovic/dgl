@@ -13,7 +13,18 @@ Currently it's only tested on Windows 7.
 Make sure you're using the latest compiler. Sometimes that even means using the latest git-head version
 (sorry about that).
 
-Either set the `DERELICT3_HOME` and `MINLIB_HOME` environment variable, or clone the dependency alongside `dgl`, so the `Derelict3`, `minilib`, and `dgl` folders are alongside one another in the same directory.
+Make sure the dependencies can be found either in these environment variables:
+
+- `MINLIB_HOME`
+- `DERELICT3_HOME`
+- `DEIMOS_GLFW`
+
+Or put the dependencies alongside `dgl`, so the directory structure becomes:
+
+- `dir/dgl`
+- `dir/minilib`
+- `dir/Derelict3`
+- `dir/glfw`
 
 Run the `build.bat` file to both run the unittests and generate a static library in the `bin` subfolder.
 
@@ -21,6 +32,7 @@ Run the `build.bat` file to both run the unittests and generate a static library
 
 - [Derelict3](https://github.com/aldacron/Derelict3)
 - [minilib](https://github.com/AndrejMitrovic/minilib)
+- [glwf](https://github.com/D-Programming-Deimos/glfw)
 
 ## License
 
