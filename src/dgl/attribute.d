@@ -31,6 +31,6 @@ struct Attribute
     */
     void disable()
     {
-        verify!glDisableVertexAttribArray(0);
+        verify!glDisableVertexAttribArray(cast(GLint)location);
     }
 }
