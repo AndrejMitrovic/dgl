@@ -45,13 +45,3 @@ version(unittest)
             remove(shaderFile);
     }
 }
-
-version (DGL_NO_ERROR_CHECKING)
-{
-    ///
-    void require(T...)(T t) { }
-}
-else
-{
-    public import minilib.core.test : require;
-}
