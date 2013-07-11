@@ -60,9 +60,9 @@ struct Shader
         Read the shader of type $(D shaderType) from
         the file $(D fileName) and compile it.
     */
-    this(in char[] fileName, ShaderType shaderType)
+    this(ShaderType shaderType, in char[] fileName)
     {
-        _data = Data(fileName, shaderType);
+        _data = Data(shaderType, fileName);
     }
 
     /** Explicitly delete the OpenGL shader. */
@@ -71,7 +71,7 @@ struct Shader
         _data.remove();
     }
 
-    // API
+    // internal API
     package GLuint shaderID()
     {
         return _data._shaderID;
@@ -85,10 +85,10 @@ private:
 
 private struct ShaderImpl
 {
-    this(in char[] fileName, ShaderType shaderType)
+    this(ShaderType shaderType, in char[] fileName)
     {
-        require(fileName.exists, "Shader file '%s' does not exist.", fileName);
         require(shaderType.isValidEnum, "Shader type is uninitialized.");
+        require(fileName.exists, "Shader file '%s' does not exist.", fileName);
 
         _fileName = fileName;
         _shaderID = verify!glCreateShader(cast(GLenum)shaderType);

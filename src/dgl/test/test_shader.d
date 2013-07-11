@@ -23,16 +23,16 @@ import dgl.test.util;
 unittest
 {
     // throw on no file
-    Shader("no.file", ShaderType.vertex).assertErrorsWith("Shader file 'no.file' does not exist.");
+    Shader(ShaderType.vertex, "no.file").assertErrorsWith("Shader file 'no.file' does not exist.");
 
     // throw on no shader type
-    Shader(testShaders[0].vertex, ShaderType.invalid).assertErrorsWith("Shader type is uninitialized.");
+    Shader(ShaderType.invalid, testShaders[0].vertex).assertErrorsWith("Shader type is uninitialized.");
 
     // throw on invalid shader source
-    Shader(badShaders[0].vertex, ShaderType.vertex)
+    Shader(ShaderType.vertex, badShaders[0].vertex)
         .getException!ShaderException.fileName.assertEqual(badShaders[0].vertex);
 
     // check init and copying
-    auto shader1 = Shader(testShaders[0].vertex, ShaderType.vertex);
-    shader1 = Shader(testShaders[0].vertex, ShaderType.vertex);
+    auto shader1 = Shader(ShaderType.vertex, testShaders[0].vertex);
+    shader1 = Shader(ShaderType.vertex, testShaders[0].vertex);
 }
