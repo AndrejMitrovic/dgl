@@ -10,11 +10,11 @@ set "files="
 for /r %%i in (*.d) do set files=!files! %%i
 
 set "LIBS_ROOT=%CD%\..\..
-IF NOT EXIST %DEIMOS_GLFW% do set DEIMOS_GLFW=%LIBS_ROOT%\glfw
 IF NOT EXIST %MINILIB_HOME% do set MINILIB_HOME=%LIBS_ROOT%\minilib
 IF NOT EXIST %DERELICT3_HOME% do set DERELICT3_HOME=%LIBS_ROOT%\Derelict3
+IF NOT EXIST %DEIMOS_GLFW% do set DEIMOS_GLFW=%LIBS_ROOT%\glfw
 
-set includes=-I%DEIMOS_GLFW% -I%MINILIB_HOME%\src -I%DERELICT3_HOME%\import
+set includes=-I%MINILIB_HOME%\src -I%DERELICT3_HOME%\import -I%DEIMOS_GLFW%
 set implibs=%dglRoot%\lib\glfw3_implib.lib
 set flags=%includes% %implibs%
 
