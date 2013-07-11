@@ -58,7 +58,7 @@ struct Shader
 {
     /**
         Read the shader of type $(D shaderType) from
-        the file $(D fileName) and compileShader it.
+        the file $(D fileName) and compile it.
     */
     this(in char[] fileName, ShaderType shaderType)
     {

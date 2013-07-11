@@ -33,12 +33,16 @@ class ProgramException : Exception
     The OpenGL program type.
     This is a refcounted type which can be freely copied around.
     Once the reference count reaches 0 the underlying program
-    and all shaders it references will be deleted.
+    is deleted.
+
+    $(B Note:) The program will not call $(B remove()) on the
+    shaders after linking, you have to do this manually.
 */
 struct Program
 {
     /**
-        Initialize the program with a list of shaders.
+        Initialize the program with a list of shaders,
+        and create and link the program.
     */
     this(Shader[] shaders...)
     {
@@ -62,13 +66,8 @@ private struct ProgramImpl
     {
         _programID = verify!glCreateProgram();
 
-        _shaders.reserve(shaders.length);
-
         foreach (shader; shaders)
-        {
             verify!glAttachShader(_programID, shader.shaderID);
-            _shaders ~= shader;
-        }
 
         link();
     }
@@ -88,8 +87,6 @@ private struct ProgramImpl
 
         GLchar[] logBuff = new GLchar[logLength];
         verify!glGetProgramInfoLog(_programID, logLength, null, logBuff.ptr);
-
-        assert(0, logBuff);
 
         auto log = logBuff[0 .. logLength - 1];
         throw new ProgramException(log);
@@ -117,9 +114,6 @@ private struct ProgramImpl
 
     // data
     GLuint _programID = invalidProgramID;
-
-    /// list of all shaders
-    Shader[] _shaders;
 
     // sentinel
     private enum invalidProgramID = GLuint.max;
