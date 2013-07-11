@@ -87,10 +87,10 @@ struct Shader
         read the shader code from disk, but from the
         in-memory buffer $(D shaderText).
     */
-    //~ this(ShaderType shaderType, in char[] shaderName, in char[] shaderText)
-    //~ {
-        //~ _data = Data(shaderType, shaderName, shaderText);
-    //~ }
+    this(ShaderType shaderType, in char[] shaderName, in char[] shaderText)
+    {
+        _data = Data(shaderType, shaderName, shaderText);
+    }
 
     /** Explicitly delete the OpenGL shader. */
     void remove()
@@ -114,14 +114,20 @@ private struct ShaderImpl
 {
     this(ShaderType shaderType, in char[] shaderFile)
     {
-        require(shaderType.isValidEnum, "Shader type is uninitialized.");
         require(shaderFile.exists, "Shader file '%s' does not exist.", shaderFile);
 
-        _shaderType = shaderType;
-        _shaderName = shaderFile.baseName;
-        _shaderID = verify!glCreateShader(cast(GLenum)shaderType);
-
+        _shaderFile = shaderFile;
         string shaderText = shaderFile.readText();
+        this(shaderType, shaderFile.baseName, shaderText);
+    }
+
+    this(ShaderType shaderType, in char[] shaderName, in char[] shaderText)
+    {
+        require(shaderType.isValidEnum, "Shader type is uninitialized.");
+
+        _shaderType = shaderType;
+        _shaderName = shaderName;
+        _shaderID = verify!glCreateShader(cast(GLenum)shaderType);
 
         auto shaderPtr = shaderText.ptr;
         auto shaderLen = cast(int)shaderText.length;

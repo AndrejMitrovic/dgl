@@ -12,6 +12,8 @@ module dgl.test.test_shader;
 
 import core.exception;
 import std.exception;
+import std.file;
+import std.path;
 
 import minilib.core.test;
 
@@ -29,14 +31,14 @@ unittest
     Shader(ShaderType.invalid, testShaders[0].vertex).assertErrorsWith("Shader type is uninitialized.");
 
     // throw on bad shader from file
-    auto exc = Shader(ShaderType.vertex, badShaders[0].vertex).getException!ShaderException;
-    exc.shaderName.assertEqual(badShaders[0].vertex);
-    exc.shaderFile.assertEmpty();
+    auto exc1 = Shader(ShaderType.vertex, badShaders[0].vertex).getException!ShaderException;
+    exc1.shaderName.assertEqual(badShaders[0].vertex.baseName);
+    exc1.shaderFile.assertEqual(badShaders[0].vertex);
 
     // throw on bad shader from memory
-    //~ auto exc = Shader(ShaderType.vertex, badShaders[0].vertex).getException!ShaderException;
-    //~ exc.shaderName.assertEqual(badShaders[0].vertex);
-    //~ exc.shaderFile.assertEmpty();
+    auto exc2 = Shader(ShaderType.vertex, "badShader", readText(badShaders[0].vertex)).getException!ShaderException;
+    exc2.shaderName.assertEqual("badShader");
+    exc2.shaderFile.assertEmpty();
 
     // check init and copying
     auto shader1 = Shader(ShaderType.vertex, testShaders[0].vertex);
