@@ -38,7 +38,7 @@ struct Shader
     /** Read the shader of type $(D shaderType) from the file $(D fileName). */
     this(in char[] fileName, ShaderType shaderType)
     {
-        require(fileName.exists, format("Shader file '%s' does not exist.", fileName));
+        require(fileName.exists, "Shader file '%s' does not exist.", fileName);
         require(shaderType.isValidEnum, "Shader type is uninitialized.");
 
         string shaderText = fileName.readText();

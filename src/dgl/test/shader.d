@@ -22,16 +22,10 @@ import dgl.test.util;
 
 unittest
 {
-    // Throw on uninitialized shader access
     Shader shader;
-    assertThrown!AssertError(shader._testInvariant());
-}
+    shader._testInvariant().assertErrorsWith("Shader was left uninitialized.");
 
-unittest
-{
-    // Throw on opening non-existing shader file
-    Shader("foobar.shader", ShaderType.vertex).assertErrorsWith("Shader file 'foobar.shader' does not exist.");
+    Shader("no.file", ShaderType.vertex).assertErrorsWith("Shader file 'no.file' does not exist.");
 
-    // Throw on invalid shader type
     Shader(shaderFile, ShaderType.invalid).assertErrorsWith("Shader type is uninitialized.");
 }
