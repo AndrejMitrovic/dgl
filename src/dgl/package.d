@@ -10,3 +10,8 @@ public
 {
     import dgl.shader;
 }
+
+private
+{
+    import dgl.test.shader;
+}
