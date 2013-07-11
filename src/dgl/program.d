@@ -56,15 +56,15 @@ struct Program
     }
 
     /** Start using this OpenGL program. */
-    void start()
+    void bind()
     {
-        _data.start();
+        _data.bind();
     }
 
     /** Stop using this OpenGL program. */
-    void stop()
+    void unbind()
     {
-        _data.stop();
+        _data.unbind();
     }
 
 private:
@@ -104,12 +104,12 @@ private struct ProgramImpl
         throw new ProgramException(log);
     }
 
-    private void start()
+    private void bind()
     {
         verify!glUseProgram(_programID);
     }
 
-    private void stop()
+    private void unbind()
     {
         verify!glUseProgram(nullProgramID);
     }

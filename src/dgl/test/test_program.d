@@ -28,6 +28,6 @@ unittest
     auto shader2 = Shader(ShaderType.fragment, testShaders[0].fragment.readText);
     auto program = Program(shader1, shader2);
 
-    program.start();
-    program.stop();
+    program.bind();
+    program.unbind();
 }
