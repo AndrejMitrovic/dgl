@@ -13,5 +13,5 @@ public
 
 private
 {
-    import dgl.test.shader;
+    import dgl.test.test_shader;
 }
