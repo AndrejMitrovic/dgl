@@ -56,7 +56,7 @@ version(unittest)
         scope(failure)
             glfwTerminate();
 
-        // set the window hints as inivisible
+        // set the window to inivisible since it will only briefly appear during testing
         glfwWindowHint(GLFW_VISIBLE, 0);
 
         // Create a windowed mode window and its OpenGL context
