@@ -11,6 +11,7 @@ import std.conv;
 import std.exception;
 import std.file;
 import std.path;
+import std.range;
 import std.stdio;
 import std.string;
 import std.traits;
@@ -23,6 +24,8 @@ import derelict.opengl3.deprecatedConstants;
 import derelict.opengl3.constants;
 
 import deimos.glfw.glfw3;
+
+import dgl.shader;
 
 ///
 public alias writeFile = std.file.write;
@@ -73,12 +76,43 @@ version(unittest)
         glfwTerminate();
     }
 
-    const string vertexShader1 = "shader.glsl";
-    const string badVertexShader1 = "shader_bad.glsl";
+    // 10612 regression workaround:
+    // http://d.puremagic.com/issues/show_bug.cgi?id=10612
+    // string[ShaderType][] testShaders;
+
+    /**
+        Group of of shader file names, each such group is
+        compatible with each other and can be linked in an OpenGL program
+    */
+    private struct ShaderGroup
+    {
+        string vertex;
+        string geometry;
+        string fragment;
+
+        void remove()
+        {
+            if (vertex.exists) .remove(vertex);
+            if (geometry.exists) .remove(geometry);
+            if (fragment.exists) .remove(fragment);
+        }
+    }
+
+    ShaderGroup[] testShaders;
+    ShaderGroup[] badShaders;
 
     private void writeTestShaders()
     {
-        vertexShader1.writeFile(q{
+        writeGoodShaders();
+        writeBadShaders();
+    }
+
+    private void writeGoodShaders()
+    {
+        ShaderGroup shaderGroup;
+
+        string vertexFile = "good_vertex_1";
+        vertexFile.writeFile(q{
             #version 330
 
             in vec2 position;
@@ -90,27 +124,55 @@ version(unittest)
                 texcoord = position * vec2(0.5, -0.5) + vec2(0.5);
             }
         });
+        shaderGroup.vertex = vertexFile;
 
-        badVertexShader1.writeFile(q{
+        string fragmentFile = "good_fragment_1";
+        fragmentFile.writeFile(q{
             #version 330
+            uniform float fade_factor;
+            uniform sampler2D textures[2];
 
-            in vec2 position;
-            out vec2 texcoord;
+            in vec2 texcoord;
+            out vec4 outputColor;
+            out vec4 outputColor2;
 
+            void main()
+            {
+                gl_FragColor = mix(
+                    texture2D(textures[0], texcoord),
+                    texture2D(textures[1], texcoord),
+                    fade_factor
+                );
+            }
+        });
+        shaderGroup.fragment = fragmentFile;
+
+        testShaders ~= shaderGroup;
+    }
+
+    private void writeBadShaders()
+    {
+        ShaderGroup shaderGroup;
+
+        string vertexFile = "bad_vertex_1";
+        vertexFile.writeFile(q{
             asdf
-
-            void main()
-            {
-                gl_Position = vec4(position, 0.0, 1.0);
-                texcoord = position * vec2(0.5, -0.5) + vec2(0.5);
-            }
         });
+        shaderGroup.vertex = vertexFile;
+
+        string fragmentFile = "bad_fragment_1";
+        fragmentFile.writeFile(q{
+            asdf
+        });
+        shaderGroup.fragment = fragmentFile;
+
+        badShaders ~= shaderGroup;
     }
 
     private void removeTestShaders()
     {
-        foreach (file; [vertexShader1, badVertexShader1])
-            if (file.exists) remove(file);
+        foreach (group; chain(testShaders, badShaders))
+            group.remove();
     }
 }
 

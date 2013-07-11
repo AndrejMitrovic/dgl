@@ -18,20 +18,6 @@ import derelict.opengl3.gl3;
 
 import dgl.test.util;
 
-///
-class ShaderException : Exception
-{
-    this(in char[] fileName, in char[] log)
-    {
-        this.fileName = fileName;
-        string error = format("Failed to compile shader in file '%s':\n%s", fileName, log);
-        super(error);
-    }
-
-    /// The file the shader was read from.
-    const(char)[] fileName;
-}
-
 /// All possible OpenGL shader types
 enum ShaderType
 {
@@ -48,6 +34,20 @@ enum ShaderType
     fragment = GL_FRAGMENT_SHADER,
 }
 
+///
+class ShaderException : Exception
+{
+    this(in char[] fileName, in char[] log)
+    {
+        this.fileName = fileName;
+        string error = format("Failed to compileShader shader in file '%s':\n%s", fileName, log);
+        super(error);
+    }
+
+    /// The file the shader was read from.
+    const(char)[] fileName;
+}
+
 /**
     The OpenGL shader type.
     This is a refcounted type which can be freely copied around.
@@ -58,7 +58,7 @@ struct Shader
 {
     /**
         Read the shader of type $(D shaderType) from
-        the file $(D fileName) and compile it.
+        the file $(D fileName) and compileShader it.
     */
     this(in char[] fileName, ShaderType shaderType)
     {
@@ -94,10 +94,10 @@ private struct ShaderImpl
         enum elemCount = 1;
 
         verify!glShaderSource(_shaderID, elemCount, &shaderPtr, &shaderLen);
-        this.compile();
+        this.compileShader();
     }
 
-    private void compile()
+    private void compileShader()
     {
         verify!glCompileShader(_shaderID);
 
@@ -137,6 +137,7 @@ private struct ShaderImpl
     /// Should never perform assign
     @disable void opAssign(typeof(this));
 
+    // data
     GLuint _shaderID = invalidShaderID;
     const(char)[] _fileName;
 
