@@ -12,6 +12,7 @@ module dgl.test.test_program;
 
 import core.exception;
 import std.exception;
+import std.file;
 
 import minilib.core.test;
 
@@ -23,7 +24,7 @@ import dgl.test.util;
 
 unittest
 {
-    auto shader1 = Shader(ShaderType.vertex, testShaders[0].vertex);
-    auto shader2 = Shader(ShaderType.fragment, testShaders[0].fragment);
+    auto shader1 = Shader(ShaderType.vertex, testShaders[0].vertex.readText);
+    auto shader2 = Shader(ShaderType.fragment, testShaders[0].fragment.readText);
     auto program = Program(shader1, shader2);
 }

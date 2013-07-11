@@ -14,6 +14,7 @@ import core.exception;
 import std.exception;
 import std.file;
 import std.path;
+import std.string;
 
 import minilib.core.test;
 
@@ -25,39 +26,26 @@ import dgl.test.util;
 unittest
 {
     // throw on no file
-    Shader(ShaderType.vertex, "no.file").assertErrorsWith("Shader file 'no.file' does not exist.");
+    Shader.fromFile(ShaderType.vertex, "no.file").assertErrorsWith("Shader file 'no.file' does not exist.");
 
     // throw on no shader type
-    Shader(ShaderType.invalid, testShaders[0].vertex).assertErrorsWith("Shader type is uninitialized.");
+    Shader.fromFile(ShaderType.invalid, testShaders[0].vertex).assertErrorsWith("Shader type is uninitialized.");
+
+    // throw on trying to pass a file name instead of a buffer
+    Shader(ShaderType.invalid, testShaders[0].vertex)
+        .assertErrorsWith("Attempted to pass a shader file '%s' instead of the shader code. Use 'Shader.fromFile' to load a shader from disk.".format(testShaders[0].vertex));
 
     // throw on bad shader from file
-    auto exc1 = Shader(ShaderType.vertex, badShaders[0].vertex).getException!ShaderException;
-    exc1.shaderName.assertEqual(badShaders[0].vertex.baseName);
-    exc1.shaderFile.assertEqual(badShaders[0].vertex);
+    assertThrown!ShaderException(Shader.fromFile(ShaderType.vertex, badShaders[0].vertex));
 
     // throw on bad shader from memory
-    auto exc2 = Shader(ShaderType.vertex, "badShader", readText(badShaders[0].vertex)).getException!ShaderException;
-    exc2.shaderName.assertEqual("badShader");
-    exc2.shaderFile.assertEmpty();
-
-    // throw when using file constructor instead of in-memory buffer constructor
-    assertThrown(Shader(ShaderType.vertex,
-    q{
-        #version 330
-
-        in vec4 position;
-
-        void main()
-        {
-            gl_Position = position;
-        }
-    }));
+    assertThrown!ShaderException(Shader(ShaderType.vertex, readText(badShaders[0].vertex)));
 
     // check init and copying from file
-    auto shader1 = Shader(ShaderType.vertex, testShaders[0].vertex);
-    shader1 = Shader(ShaderType.vertex, testShaders[0].vertex);
+    auto shader1 = Shader.fromFile(ShaderType.vertex, testShaders[0].vertex);
+    shader1 = Shader(ShaderType.vertex, readText(testShaders[0].vertex));
 
     // check init and copying from memory
-    auto shader2 = Shader(ShaderType.vertex, testShaders[0].vertex, readText(testShaders[0].vertex));
-    shader2 = Shader(ShaderType.vertex, testShaders[0].vertex, readText(testShaders[0].vertex));
+    auto shader2 = Shader(ShaderType.vertex, readText(testShaders[0].vertex));
+    shader2 = Shader(ShaderType.vertex, readText(testShaders[0].vertex));
 }

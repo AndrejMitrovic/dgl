@@ -38,25 +38,11 @@ enum ShaderType
 ///
 class ShaderException : Exception
 {
-    this(ShaderType shaderType, in char[] shaderName, in char[] shaderFile, in char[] log)
+    this(ShaderType shaderType, in char[] log)
     {
-        this.shaderName = shaderName;
-        this.shaderFile = shaderFile;
-
-        string error =
-            format("Failed to compile shader '%s' of type '%s'%s:\n%s",
-                   shaderName, shaderType,
-                   shaderFile !is null ? format(" from file '%s'", shaderFile) : "",
-                   log);
-
+        string error = format("Failed to compile shader of type '%s':\n%s", shaderType, log);
         super(error);
     }
-
-    /// The shader name. If shader was read from disk it is the base name of the file name.
-    const(char)[] shaderName;
-
-    /// The shader file. If the shader was read from memory it will be empty.
-    const(char)[] shaderFile;
 }
 
 /**
@@ -68,28 +54,24 @@ class ShaderException : Exception
 struct Shader
 {
     /**
-        Read the shader of type $(D shaderType) from
-        the file $(D fileName) and compile it.
-
-        The shader name will be equal to $(D fileName).
+        Create a shader of type $(D shaderType) from
+        the shader code in $(D shaderText).
     */
-    this(ShaderType shaderType, in char[] fileName)
+    this(ShaderType shaderType, in char[] shaderText)
     {
-        _data = Data(shaderType, fileName);
+        require(!shaderText.exists, "Attempted to pass a shader file '%s' instead of the shader code. Use 'Shader.fromFile' to load a shader from disk.", shaderText);
+        _data = Data(shaderType, shaderText);
     }
 
     /**
-        Read the shader of type $(D shaderType) from
-        the shader code in $(D shaderText). The shader
-        name will be set to $(D shaderName).
-
-        This is the constructor version which doesn't
-        read the shader code from disk, but from the
-        in-memory buffer $(D shaderText).
+        Create a shader of type $(D shaderType) from
+        the file $(D shaderFile) and return it.
     */
-    this(ShaderType shaderType, in char[] shaderName, in char[] shaderText)
+    static Shader fromFile(ShaderType shaderType, in char[] shaderFile)
     {
-        _data = Data(shaderType, shaderName, shaderText);
+        require(shaderFile.exists, "Shader file '%s' does not exist.", shaderFile);
+        string shaderText = shaderFile.readText();
+        return Shader(shaderType, shaderText);
     }
 
     /** Explicitly delete the OpenGL shader. */
@@ -112,24 +94,11 @@ private:
 
 private struct ShaderImpl
 {
-    this(ShaderType shaderType, in char[] shaderFile)
-    {
-        require(shaderFile.isValidFilename,
-            "Shader file name is not a valid file name, use the constructor taking an in-memory buffer if this was a mistake. The file name passed was:\n'%s'.", shaderFile);
-
-        require(shaderFile.exists, "Shader file '%s' does not exist.", shaderFile);
-
-        _shaderFile = shaderFile;
-        string shaderText = shaderFile.readText();
-        this(shaderType, shaderFile.baseName, shaderText);
-    }
-
-    this(ShaderType shaderType, in char[] shaderName, in char[] shaderText)
+    this(ShaderType shaderType, in char[] shaderText)
     {
         require(shaderType.isValidEnum, "Shader type is uninitialized.");
 
         _shaderType = shaderType;
-        _shaderName = shaderName;
         _shaderID = verify!glCreateShader(cast(GLenum)shaderType);
 
         auto shaderPtr = shaderText.ptr;
@@ -157,7 +126,7 @@ private struct ShaderImpl
         verify!glGetShaderInfoLog(_shaderID, logLength, null, logBuff.ptr);
 
         auto log = logBuff[0 .. logLength - 1];
-        throw new ShaderException(_shaderType, _shaderName, _shaderFile, log);
+        throw new ShaderException(_shaderType, log);
     }
 
     ~this()
@@ -183,8 +152,6 @@ private struct ShaderImpl
     /* Shader data. */
     GLuint _shaderID = invalidShaderID;
     ShaderType _shaderType;
-    const(char)[] _shaderName;
-    const(char)[] _shaderFile;
 
     // sentinel
     private enum invalidShaderID = GLuint.max;
