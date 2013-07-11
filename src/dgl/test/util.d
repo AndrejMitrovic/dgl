@@ -115,13 +115,11 @@ version(unittest)
         vertexFile.writeFile(q{
             #version 330
 
-            in vec2 position;
-            out vec2 texcoord;
+            in vec4 position;
 
             void main()
             {
-                gl_Position = vec4(position, 0.0, 1.0);
-                texcoord = position * vec2(0.5, -0.5) + vec2(0.5);
+                gl_Position = position;
             }
         });
         shaderGroup.vertex = vertexFile;
@@ -129,20 +127,12 @@ version(unittest)
         string fragmentFile = "good_fragment_1";
         fragmentFile.writeFile(q{
             #version 330
-            uniform float fade_factor;
-            uniform sampler2D textures[2];
 
-            in vec2 texcoord;
-            out vec4 outputColor;
-            out vec4 outputColor2;
+            out vec4 fragColor;
 
             void main()
             {
-                gl_FragColor = mix(
-                    texture2D(textures[0], texcoord),
-                    texture2D(textures[1], texcoord),
-                    fade_factor
-                );
+                fragColor = vec4(1.0, 1.0, 1.0, 1.0);
             }
         });
         shaderGroup.fragment = fragmentFile;
@@ -189,8 +179,9 @@ auto verify(alias func, string file = __FILE__, size_t line = __LINE__, Args...)
     GLenum lastError = glGetError();
     if (lastError != GL_NO_ERROR)
     {
+        string argsStr = format("%s".repeat(Args.length).join(", "), args);
         stderr.writefln("%s(%s): %s(%s) failed with: %s",
-            __traits(identifier, func), text(args), lastError.toString());
+            file, line, __traits(identifier, func), argsStr, lastError.toString());
     }
 
     static if (!is(ReturnType!func == void))

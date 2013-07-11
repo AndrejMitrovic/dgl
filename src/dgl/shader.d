@@ -71,6 +71,12 @@ struct Shader
         _data.remove();
     }
 
+    // API
+    package GLuint shaderID()
+    {
+        return _data._shaderID;
+    }
+
 private:
 
     alias Data = RefCounted!(ShaderImpl, RefCountedAutoInitialize.no);

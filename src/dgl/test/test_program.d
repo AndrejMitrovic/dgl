@@ -23,4 +23,8 @@ import dgl.test.util;
 
 unittest
 {
+    auto shader1 = Shader(testShaders[0].vertex, ShaderType.vertex);
+    auto shader2 = Shader(testShaders[0].fragment, ShaderType.fragment);
+
+    auto program = Program(shader1, shader2);
 }
