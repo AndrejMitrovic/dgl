@@ -37,15 +37,15 @@ enum ShaderType
 ///
 class ShaderException : Exception
 {
-    this(in char[] fileName, in char[] log)
+    this(in char[] shaderName, in char[] log)
     {
-        this.fileName = fileName;
-        string error = format("Failed to compileShader shader in file '%s':\n%s", fileName, log);
+        this.shaderName = shaderName;
+        string error = format("Failed to compileShader shader '%s':\n%s", shaderName, log);
         super(error);
     }
 
     /// The file the shader was read from.
-    const(char)[] fileName;
+    const(char)[] shaderName;
 }
 
 /**
@@ -85,15 +85,15 @@ private:
 
 private struct ShaderImpl
 {
-    this(ShaderType shaderType, in char[] fileName)
+    this(ShaderType shaderType, in char[] shaderName)
     {
         require(shaderType.isValidEnum, "Shader type is uninitialized.");
-        require(fileName.exists, "Shader file '%s' does not exist.", fileName);
+        require(shaderName.exists, "Shader file '%s' does not exist.", shaderName);
 
-        _fileName = fileName;
+        _shaderName = shaderName;
         _shaderID = verify!glCreateShader(cast(GLenum)shaderType);
 
-        string shaderText = fileName.readText();
+        string shaderText = shaderName.readText();
 
         auto shaderPtr = shaderText.ptr;
         auto shaderLen = cast(int)shaderText.length;
@@ -120,7 +120,7 @@ private struct ShaderImpl
         verify!glGetShaderInfoLog(_shaderID, logLength, null, logBuff.ptr);
 
         auto log = logBuff[0 .. logLength - 1];
-        throw new ShaderException(_fileName, log);
+        throw new ShaderException(_shaderName, log);
     }
 
     ~this()
@@ -145,7 +145,7 @@ private struct ShaderImpl
 
     // data
     GLuint _shaderID = invalidShaderID;
-    const(char)[] _fileName;
+    const(char)[] _shaderName;
 
     // sentinel
     private enum invalidShaderID = GLuint.max;

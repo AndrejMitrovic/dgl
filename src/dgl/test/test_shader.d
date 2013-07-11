@@ -30,7 +30,7 @@ unittest
 
     // throw on invalid shader source
     Shader(ShaderType.vertex, badShaders[0].vertex)
-        .getException!ShaderException.fileName.assertEqual(badShaders[0].vertex);
+        .getException!ShaderException.shaderName.assertEqual(badShaders[0].vertex);
 
     // check init and copying
     auto shader1 = Shader(ShaderType.vertex, testShaders[0].vertex);
