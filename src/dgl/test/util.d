@@ -56,12 +56,12 @@ version(unittest)
         scope(failure)
             glfwTerminate();
 
-        // Create a windowed mode window and its OpenGL context
-        auto window = require(glfwCreateWindow(100, 100, "Hello World", null, null),
-                "glfwCreateWindow call failed.");
+        // set the window hints as inivisible
+        glfwWindowHint(GLFW_VISIBLE, 0);
 
-        // minimize it during testing
-        glfwIconifyWindow(window);
+        // Create a windowed mode window and its OpenGL context
+        auto window = require(glfwCreateWindow(640, 480, "Hello World", null, null),
+                "glfwCreateWindow call failed.");
 
         // Make the window's context current
         glfwMakeContextCurrent(window);

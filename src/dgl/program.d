@@ -99,10 +99,10 @@ private struct ProgramImpl
 
     private void remove()
     {
-        if (_programID != invalidProgramID)
+        if (_programID != nullProgramID)
         {
             verify!glDeleteProgram(_programID);
-            _programID = invalidProgramID;
+            _programID = nullProgramID;
         }
     }
 
@@ -113,8 +113,8 @@ private struct ProgramImpl
     @disable void opAssign(typeof(this));
 
     // data
-    GLuint _programID = invalidProgramID;
+    GLuint _programID = nullProgramID;
 
     // sentinel
-    private enum invalidProgramID = GLuint.max;
+    private enum nullProgramID = 0;
 }

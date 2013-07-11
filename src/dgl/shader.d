@@ -136,10 +136,10 @@ private struct ShaderImpl
 
     private void remove()
     {
-        if (_shaderID != invalidShaderID)
+        if (_shaderID != nullShaderID)
         {
             verify!glDeleteShader(_shaderID);
-            _shaderID = invalidShaderID;
+            _shaderID = nullShaderID;
         }
     }
 
@@ -150,9 +150,9 @@ private struct ShaderImpl
     @disable void opAssign(typeof(this));
 
     /* Shader data. */
-    GLuint _shaderID = invalidShaderID;
+    GLuint _shaderID = nullShaderID;
     ShaderType _shaderType;
 
     // sentinel
-    private enum invalidShaderID = GLuint.max;
+    private enum nullShaderID = 0;
 }

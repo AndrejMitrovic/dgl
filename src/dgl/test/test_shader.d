@@ -28,7 +28,7 @@ unittest
     // throw on no file
     Shader.fromFile(ShaderType.vertex, "no.file").assertErrorsWith("Shader file 'no.file' does not exist.");
 
-    // throw on no shader type
+    // throw on invalid shader type
     Shader.fromFile(ShaderType.invalid, testShaders[0].vertex).assertErrorsWith("Shader type is uninitialized.");
 
     // throw on trying to pass a file name instead of a buffer
