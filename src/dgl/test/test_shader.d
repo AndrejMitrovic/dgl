@@ -40,7 +40,24 @@ unittest
     exc2.shaderName.assertEqual("badShader");
     exc2.shaderFile.assertEmpty();
 
-    // check init and copying
+    // throw when using file constructor instead of in-memory buffer constructor
+    assertThrown(Shader(ShaderType.vertex,
+    q{
+        #version 330
+
+        in vec4 position;
+
+        void main()
+        {
+            gl_Position = position;
+        }
+    }));
+
+    // check init and copying from file
     auto shader1 = Shader(ShaderType.vertex, testShaders[0].vertex);
     shader1 = Shader(ShaderType.vertex, testShaders[0].vertex);
+
+    // check init and copying from memory
+    auto shader2 = Shader(ShaderType.vertex, testShaders[0].vertex, readText(testShaders[0].vertex));
+    shader2 = Shader(ShaderType.vertex, testShaders[0].vertex, readText(testShaders[0].vertex));
 }

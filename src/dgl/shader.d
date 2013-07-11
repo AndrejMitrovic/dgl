@@ -114,6 +114,9 @@ private struct ShaderImpl
 {
     this(ShaderType shaderType, in char[] shaderFile)
     {
+        require(shaderFile.isValidFilename,
+            "Shader file name is not a valid file name, use the constructor taking an in-memory buffer if this was a mistake. The file name passed was:\n'%s'.", shaderFile);
+
         require(shaderFile.exists, "Shader file '%s' does not exist.", shaderFile);
 
         _shaderFile = shaderFile;
