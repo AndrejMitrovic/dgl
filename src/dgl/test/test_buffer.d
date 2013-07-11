@@ -26,7 +26,7 @@ import dgl.test.util;
 unittest
 {
     // throw on invalid hint type
-    GLBuffer([1, 2], UsageHint.init).assertErrorsWith("Draw hint is uninitialized.");
+    GLBuffer([1, 2], UsageHint.init).assertErrorsWith("Usage hint is uninitialized.");
 
     //
     GLBuffer([1, 2], UsageHint.staticDraw);

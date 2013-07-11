@@ -36,11 +36,11 @@ struct GLBuffer
 {
     /**
         Create and initialize an OpenGL buffer with the
-        contents of $(D buffer) and the buffer hint $(D bufferHint).
+        contents of $(D buffer) and the buffer hint $(D usageHint).
     */
-    this(T)(T[] buffer, UsageHint bufferHint)
+    this(T)(T[] buffer, UsageHint usageHint)
     {
-        _data = Data(buffer, bufferHint);
+        _data = Data(buffer, usageHint);
     }
 
     /** Explicitly delete the OpenGL buffer. */
@@ -57,13 +57,13 @@ private:
 
 private struct GLBufferImpl
 {
-    this(T)(T[] buffer, UsageHint bufferHint)
+    this(T)(T[] buffer, UsageHint usageHint)
     {
-        require(bufferHint.isValidEnum, "Draw hint is uninitialized.");
+        require(usageHint.isValidEnum, "Usage hint is uninitialized.");
 
         verify!glGenBuffers(magicGenBuffIndex, &_bufferID);
         verify!glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
-        verify!glBufferData(GL_ARRAY_BUFFER, buffer.memSizeOf, buffer.ptr, cast(GLenum)bufferHint);
+        verify!glBufferData(GL_ARRAY_BUFFER, buffer.memSizeOf, buffer.ptr, cast(GLenum)usageHint);
         verify!glBindBuffer(GL_ARRAY_BUFFER, nullBufferID);
     }
 

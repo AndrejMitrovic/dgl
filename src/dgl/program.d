@@ -55,6 +55,18 @@ struct Program
         _data.remove();
     }
 
+    /** Start using this OpenGL program. */
+    void start()
+    {
+        _data.start();
+    }
+
+    /** Stop using this OpenGL program. */
+    void stop()
+    {
+        _data.stop();
+    }
+
 private:
     alias Data = RefCounted!(ProgramImpl, RefCountedAutoInitialize.no);
     Data _data;
@@ -90,6 +102,16 @@ private struct ProgramImpl
 
         auto log = logBuff[0 .. logLength - 1];
         throw new ProgramException(log);
+    }
+
+    private void start()
+    {
+        verify!glUseProgram(_programID);
+    }
+
+    private void stop()
+    {
+        verify!glUseProgram(nullProgramID);
     }
 
     ~this()
