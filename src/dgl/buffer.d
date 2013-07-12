@@ -25,6 +25,9 @@ enum UsageHint
 
     ///
     staticDraw = GL_STATIC_DRAW,
+
+    ///
+    streamDraw = GL_STREAM_DRAW,
 }
 
 /**
@@ -104,7 +107,7 @@ private struct GLBufferImpl
     void bind(Attribute attribute, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLsizei offset)
     {
         verify!glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
-        verify!glVertexAttribPointer(cast(GLint)attribute.location, size, type, normalized, stride, cast(void*)offset);
+        verify!glVertexAttribPointer(attribute._attributeID, size, type, normalized, stride, cast(void*)offset);
     }
 
     void unbind()

@@ -28,6 +28,12 @@ unittest
     auto shader2 = Shader(ShaderType.fragment, testShaders[0].fragment.readText);
     auto program = Program(shader1, shader2);
 
+    auto uniform = program.getUniform("offset");
+
     program.bind();
+
+    // the uniform can only be set while the program is in use
+    program.setUniform2f(uniform, 1.0, 2.0);
+
     program.unbind();
 }

@@ -12,6 +12,7 @@ public
     import dgl.buffer;
     import dgl.program;
     import dgl.shader;
+    import dgl.uniform;
 }
 
 private

@@ -7,12 +7,14 @@
 module dgl.program;
 
 import std.array;
+import std.stdio;
 import std.string;
 import std.typecons;
 
 import derelict.opengl3.gl3;
 
 import dgl.shader;
+import dgl.uniform;
 
 import dgl.test.util;
 
@@ -67,6 +69,23 @@ struct Program
         _data.unbind();
     }
 
+    /**
+        Get the uniform of name $(D uniformName) in the program.
+        Note that if the uniform is not used in the shader program
+        by any of its code, an invalid $(D Uniform) will be returned,
+        and a message will be written to $(D stderr).
+    */
+    Uniform getUniform(string uniformName)
+    {
+        return _data.getUniform(uniformName);
+    }
+
+    /** Set the $(D uniform) value in this program. */
+    void setUniform2f(Uniform uniform, float value1, float value2)
+    {
+        _data.setUniform2f(uniform, value1, value2);
+    }
+
 private:
     alias Data = RefCounted!(ProgramImpl, RefCountedAutoInitialize.no);
     Data _data;
@@ -115,6 +134,22 @@ private struct ProgramImpl
     private void unbind()
     {
         verify!glUseProgram(nullProgramID);
+    }
+
+    private Uniform getUniform(string uniformName)
+    {
+        auto uniformLocation = verify!glGetUniformLocation(_programID, uniformName.toStringz);
+
+        if (uniformLocation < 0)
+            stderr.writefln("Warning: 'glGetAttribLocation' returned '%s' for location: '%s'",
+                            uniformLocation, uniformName);
+
+        return Uniform(uniformLocation);
+    }
+
+    private void setUniform2f(Uniform uniform, float value1, float value2)
+    {
+        verify!glUniform2f(uniform._uniformID, value1, value2);
     }
 
     ~this()

@@ -10,11 +10,14 @@ import derelict.opengl3.gl3;
 
 import dgl.test.util;
 
-/** An OpenGL attribute. */
+/** An OpenGL attribute location. */
 struct Attribute
 {
-    GLint location = invalidAttributeID;
-    alias location this;
+    /** Construct an attribute with the given $(D attributeID). */
+    this(int attributeID)
+    {
+        _attributeID = attributeID;
+    }
 
     /**
         Enable this attribute.
@@ -23,7 +26,7 @@ struct Attribute
     */
     void enable()
     {
-        verify!glEnableVertexAttribArray(cast(GLint)location);
+        verify!glEnableVertexAttribArray(cast(GLint)_attributeID);
     }
 
     /**
@@ -31,8 +34,12 @@ struct Attribute
     */
     void disable()
     {
-        verify!glDisableVertexAttribArray(cast(GLint)location);
+        verify!glDisableVertexAttribArray(cast(GLint)_attributeID);
     }
+
+package:
+    // location
+    GLint _attributeID = invalidAttributeID;
 
     // sentinel
     private enum invalidAttributeID = -1;
