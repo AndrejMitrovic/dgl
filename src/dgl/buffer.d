@@ -44,12 +44,22 @@ struct GLBuffer
         _data = Data(buffer, usageHint);
     }
 
+    /**
+        Write the $(D buffer) data to this buffer, at byte offset $(D byteOffset).
+        This will overwrite the data that was already in the buffer.
+    */
+    void write(T)(T[] buffer, ptrdiff_t byteOffset = 0)
+    {
+        _data.write(buffer, byteOffset);
+    }
+
     /** Bind this buffer to an attribute. */
     void bind(Attribute attribute, int size, GLenum type, bool normalized, int stride, int offset)
     {
         _data.bind(attribute, size, type, cast(GLboolean)normalized, stride, offset);
     }
 
+    /** Unbind this buffer. */
     void unbind()
     {
         _data.unbind();
@@ -79,6 +89,13 @@ private struct GLBufferImpl
         verify!glBindBuffer(GL_ARRAY_BUFFER, nullBufferID);
     }
 
+    void write(T)(T[] buffer, ptrdiff_t byteOffset)
+    {
+        verify!glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
+        verify!glBufferSubData(GL_ARRAY_BUFFER, byteOffset, buffer.memSizeOf, buffer.ptr);
+        verify!glBindBuffer(GL_ARRAY_BUFFER, nullBufferID);
+    }
+
     ~this()
     {
         remove();
@@ -97,10 +114,10 @@ private struct GLBufferImpl
 
     private void remove()
     {
-        if (_bufferID != nullBufferID)
+        if (_bufferID != invalidBufferID)
         {
             verify!glDeleteBuffers(magicDeleteIndex, &_bufferID);
-            _bufferID = nullBufferID;
+            _bufferID = invalidBufferID;
         }
     }
 
@@ -111,12 +128,15 @@ private struct GLBufferImpl
     @disable void opAssign(typeof(this));
 
     /* Buffer data. */
-    GLuint _bufferID = nullBufferID;
+    GLuint _bufferID = invalidBufferID;
 
     /* todo: figure out why it's a '1' here for both enums. */
     private enum magicDeleteIndex = 1;
     private enum magicGenBuffIndex = 1;
 
     // sentinel
+    private enum invalidBufferID = -1;
+
+    // unbind
     private enum nullBufferID = 0;
 }

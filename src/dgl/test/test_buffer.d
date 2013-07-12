@@ -30,5 +30,8 @@ unittest
 
     //
     auto buffer = GLBuffer([1, 2], UsageHint.staticDraw);
-    //~ buffer.bind
+
+    buffer.write([1, 2]);
+    buffer.write([1]);
+    buffer.write([1], 1);
 }

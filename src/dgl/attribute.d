@@ -13,7 +13,7 @@ import dgl.test.util;
 /** An OpenGL attribute. */
 struct Attribute
 {
-    GLint location;
+    GLint location = invalidAttributeID;
     alias location this;
 
     /**
@@ -33,4 +33,7 @@ struct Attribute
     {
         verify!glDisableVertexAttribArray(cast(GLint)location);
     }
+
+    // sentinel
+    private enum invalidAttributeID = -1;
 }

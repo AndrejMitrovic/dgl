@@ -80,6 +80,12 @@ struct Shader
         _data.remove();
     }
 
+    /** Return the shader type of this shader. */
+    @property ShaderType shaderType()
+    {
+        return _data._shaderType;
+    }
+
     // internal API
     package GLuint shaderID()
     {
@@ -136,10 +142,10 @@ private struct ShaderImpl
 
     private void remove()
     {
-        if (_shaderID != nullShaderID)
+        if (_shaderID != invalidShaderID)
         {
             verify!glDeleteShader(_shaderID);
-            _shaderID = nullShaderID;
+            _shaderID = invalidShaderID;
         }
     }
 
@@ -150,9 +156,9 @@ private struct ShaderImpl
     @disable void opAssign(typeof(this));
 
     /* Shader data. */
-    GLuint _shaderID = nullShaderID;
+    GLuint _shaderID = invalidShaderID;
     ShaderType _shaderType;
 
     // sentinel
-    private enum nullShaderID = 0;
+    private enum invalidShaderID = -1;
 }
