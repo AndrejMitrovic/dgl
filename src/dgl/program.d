@@ -81,9 +81,21 @@ struct Program
     }
 
     /** Set the $(D uniform) value in this program. */
+    void setUniform1f(Uniform uniform, float value)
+    {
+        _data.setUniform1f(uniform, value);
+    }
+
+    /// ditto
     void setUniform2f(Uniform uniform, float value1, float value2)
     {
         _data.setUniform2f(uniform, value1, value2);
+    }
+
+    /// ditto
+    void setUniform4f(Uniform uniform, float value1, float value2, float value3, float value4)
+    {
+        _data.setUniform4f(uniform, value1, value2, value3, value4);
     }
 
 private:
@@ -147,9 +159,19 @@ private struct ProgramImpl
         return Uniform(uniformLocation);
     }
 
+    private void setUniform1f(Uniform uniform, float value)
+    {
+        verify!glUniform1f(uniform._uniformID, value);
+    }
+
     private void setUniform2f(Uniform uniform, float value1, float value2)
     {
         verify!glUniform2f(uniform._uniformID, value1, value2);
+    }
+
+    private void setUniform4f(Uniform uniform, float value1, float value2, float value3, float value4)
+    {
+        verify!glUniform4f(uniform._uniformID, value1, value2, value3, value4);
     }
 
     ~this()

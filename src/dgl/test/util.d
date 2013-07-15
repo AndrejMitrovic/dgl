@@ -171,20 +171,25 @@ version(unittest)
 ///
 auto verify(alias func, string file = __FILE__, size_t line = __LINE__, Args...)(Args args)
 {
-    require(func !is null, "Function pointer '%s' is not loaded. Please verify that 'DerelictGL.load()' and 'DerelictGL.reload()' were called first.", __traits(identifier, func));
+    //~ require(func !is null, "Function pointer '%s' is not loaded. Please verify that 'DerelictGL.load()' and 'DerelictGL.reload()' were called first.", __traits(identifier, func));
 
     static if (is(ReturnType!(typeof(func)) == void))
         func(args);
     else
         auto result = func(args);
 
-    GLenum lastError = glGetError();
-    if (lastError != GL_NO_ERROR)
-    {
-        string argsStr = format("%s".repeat(Args.length).join(", "), args);
-        stderr.writefln("%s(%s): %s(%s) failed with: %s",
-            file, line, __traits(identifier, func), argsStr, lastError.toString());
-    }
+    //~ GLenum lastError = glGetError();
+    //~ if (lastError != GL_NO_ERROR)
+    //~ {
+        //~ stderr.writeln("Something went wrong");
+
+        //~ stderr.writefln("%s: %s(%s) failed with: %s",
+            //~ file, line, __traits(identifier, func), lastError.toString());
+
+        //~ string argsStr = format("%s".repeat(Args.length).join(", "), args);
+        //~ stderr.writefln("%s(%s): %s(%s) failed with: %s",
+            //~ file, line, __traits(identifier, func), argsStr, lastError.toString());
+    //~ }
 
     static if (!is(ReturnType!func == void))
         return result;

@@ -27,6 +27,9 @@ enum UsageHint
     staticDraw = GL_STATIC_DRAW,
 
     ///
+    dynamicDraw = GL_DYNAMIC_DRAW,
+
+    ///
     streamDraw = GL_STREAM_DRAW,
 }
 
@@ -99,10 +102,10 @@ private struct GLBufferImpl
         verify!glBindBuffer(GL_ARRAY_BUFFER, nullBufferID);
     }
 
-    ~this()
-    {
-        remove();
-    }
+    //~ ~this()
+    //~ {
+        //~ remove();
+    //~ }
 
     void bind(Attribute attribute, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLsizei offset)
     {
@@ -119,8 +122,8 @@ private struct GLBufferImpl
     {
         if (_bufferID != invalidBufferID)
         {
-            verify!glDeleteBuffers(magicDeleteIndex, &_bufferID);
-            _bufferID = invalidBufferID;
+            //~ verify!glDeleteBuffers(magicDeleteIndex, &_bufferID);
+            //~ _bufferID = invalidBufferID;
         }
     }
 
