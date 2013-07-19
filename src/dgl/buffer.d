@@ -35,9 +35,12 @@ enum UsageHint
 
 /**
     The OpenGL buffer type.
+
     This is a refcounted type which can be freely copied around.
     Once the reference count reaches 0 the underlying OpenGL buffer
     will be deleted.
+
+    The $(D release) method can be called for manual release of OpenGL resources.
 */
 struct GLBuffer
 {
@@ -72,9 +75,9 @@ struct GLBuffer
     }
 
     /** Explicitly delete the OpenGL buffer. */
-    void remove()
+    void release()
     {
-        _data.remove();
+        _data.release();
     }
 
 private:
@@ -89,10 +92,15 @@ private struct GLBufferImpl
     {
         require(usageHint.isValidEnum, "Usage hint is uninitialized.");
 
-        verify!glGenBuffers(magicGenBuffIndex, &_bufferID);
+        verify!glGenBuffers(bufferCount, &_bufferID);
         verify!glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
         verify!glBufferData(GL_ARRAY_BUFFER, buffer.memSizeOf, buffer.ptr, cast(GLenum)usageHint);
         verify!glBindBuffer(GL_ARRAY_BUFFER, nullBufferID);
+    }
+
+    ~this()
+    {
+        release();
     }
 
     void write(T)(T[] buffer, ptrdiff_t byteOffset)
@@ -101,11 +109,6 @@ private struct GLBufferImpl
         verify!glBufferSubData(GL_ARRAY_BUFFER, byteOffset, buffer.memSizeOf, buffer.ptr);
         verify!glBindBuffer(GL_ARRAY_BUFFER, nullBufferID);
     }
-
-    //~ ~this()
-    //~ {
-        //~ remove();
-    //~ }
 
     void bind(Attribute attribute, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLsizei offset)
     {
@@ -118,12 +121,12 @@ private struct GLBufferImpl
         verify!glBindBuffer(GL_ARRAY_BUFFER, nullBufferID);
     }
 
-    private void remove()
+    void release()
     {
         if (_bufferID != invalidBufferID)
         {
-            //~ verify!glDeleteBuffers(magicDeleteIndex, &_bufferID);
-            //~ _bufferID = invalidBufferID;
+            verify!glDeleteBuffers(bufferCount, &_bufferID);
+            _bufferID = invalidBufferID;
         }
     }
 
@@ -136,13 +139,11 @@ private struct GLBufferImpl
     /* Buffer data. */
     GLuint _bufferID = invalidBufferID;
 
-    /* todo: figure out why it's a '1' here for both enums. */
-    private enum magicDeleteIndex = 1;
-    private enum magicGenBuffIndex = 1;
+    private enum bufferCount = 1;
 
     // sentinel
     private enum invalidBufferID = -1;
 
-    // unbind
+    // used for unbinding
     private enum nullBufferID = 0;
 }

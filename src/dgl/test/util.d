@@ -178,10 +178,10 @@ auto verify(alias func, string file = __FILE__, size_t line = __LINE__, Args...)
     else
         auto result = func(args);
 
-    //~ GLenum lastError = glGetError();
-    //~ if (lastError != GL_NO_ERROR)
-    //~ {
-        //~ stderr.writeln("Something went wrong");
+    GLenum lastError = glGetError();
+    if (lastError != GL_NO_ERROR)
+    {
+        stderr.writeln(lastError.toString());
 
         //~ stderr.writefln("%s: %s(%s) failed with: %s",
             //~ file, line, __traits(identifier, func), lastError.toString());
@@ -189,7 +189,7 @@ auto verify(alias func, string file = __FILE__, size_t line = __LINE__, Args...)
         //~ string argsStr = format("%s".repeat(Args.length).join(", "), args);
         //~ stderr.writefln("%s(%s): %s(%s) failed with: %s",
             //~ file, line, __traits(identifier, func), argsStr, lastError.toString());
-    //~ }
+    }
 
     static if (!is(ReturnType!func == void))
         return result;

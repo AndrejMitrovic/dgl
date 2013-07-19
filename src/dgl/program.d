@@ -13,6 +13,7 @@ import std.typecons;
 
 import derelict.opengl3.gl3;
 
+import dgl.attribute;
 import dgl.shader;
 import dgl.uniform;
 
@@ -33,12 +34,14 @@ class ProgramException : Exception
 
 /**
     The OpenGL program type.
+
     This is a refcounted type which can be freely copied around.
     Once the reference count reaches 0 the underlying program
     is deleted.
 
-    $(B Note:) The program will not call $(B remove()) on the
-    shaders after linking, you have to do this manually.
+    The $(D release) method can be called for manual release of OpenGL resources.
+
+    $(B Note:) The program will not call the shaders' $(B release()) method after construction.
 */
 struct Program
 {
@@ -52,9 +55,9 @@ struct Program
     }
 
     /** Explicitly delete the OpenGL program. */
-    void remove()
+    void release()
     {
-        _data.remove();
+        _data.release();
     }
 
     /** Start using this OpenGL program. */
@@ -67,6 +70,17 @@ struct Program
     void unbind()
     {
         _data.unbind();
+    }
+
+    /**
+        Get the attribute of name $(D attributeName) in the program.
+        Note that if the attribute is not used in the shader program
+        by any of its code, an invalid $(D Attribute) will be returned,
+        and a message will be written to $(D stderr).
+    */
+    Attribute getAttribute(string attributeName)
+    {
+        return _data.getAttribute(attributeName);
     }
 
     /**
@@ -148,12 +162,23 @@ private struct ProgramImpl
         verify!glUseProgram(nullProgramID);
     }
 
+    private Attribute getAttribute(string attributeName)
+    {
+        auto attributeLocation = verify!glGetAttribLocation(_programID, attributeName.toStringz);
+
+        if (attributeLocation < 0)
+            stderr.writefln("Warning: 'glGetAttribLocation' returned '%s' for location: '%s'",
+                            attributeLocation, attributeName);
+
+        return Attribute(attributeLocation);
+    }
+
     private Uniform getUniform(string uniformName)
     {
         auto uniformLocation = verify!glGetUniformLocation(_programID, uniformName.toStringz);
 
         if (uniformLocation < 0)
-            stderr.writefln("Warning: 'glGetAttribLocation' returned '%s' for location: '%s'",
+            stderr.writefln("Warning: 'glGetUniformLocation' returned '%s' for location: '%s'",
                             uniformLocation, uniformName);
 
         return Uniform(uniformLocation);
@@ -176,10 +201,10 @@ private struct ProgramImpl
 
     ~this()
     {
-        remove();
+        release();
     }
 
-    private void remove()
+    private void release()
     {
         if (_programID != invalidProgramID)
         {

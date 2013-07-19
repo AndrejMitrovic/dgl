@@ -47,9 +47,12 @@ class ShaderException : Exception
 
 /**
     The OpenGL shader type.
+
     This is a refcounted type which can be freely copied around.
     Once the reference count reaches 0 the underlying shader
     will be deleted.
+
+    The $(D release) method can be called for manual release of OpenGL resources.
 */
 struct Shader
 {
@@ -75,9 +78,9 @@ struct Shader
     }
 
     /** Explicitly delete the OpenGL shader. */
-    void remove()
+    void release()
     {
-        _data.remove();
+        _data.release();
     }
 
     /** Return the shader type of this shader. */
@@ -115,6 +118,11 @@ private struct ShaderImpl
         this.compileShader();
     }
 
+    ~this()
+    {
+        release();
+    }
+
     private void compileShader()
     {
         verify!glCompileShader(_shaderID);
@@ -135,12 +143,7 @@ private struct ShaderImpl
         throw new ShaderException(_shaderType, log);
     }
 
-    ~this()
-    {
-        remove();
-    }
-
-    private void remove()
+    void release()
     {
         if (_shaderID != invalidShaderID)
         {

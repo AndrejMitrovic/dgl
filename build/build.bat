@@ -24,5 +24,6 @@ rem set compiler=ldmd2.exe
 
 set dtest=rdmd -of%binPath%\dgl_test.exe --main -unittest -g --force --compiler=%compiler% %flags% dgl\package.d
 
-rem %dtest% && echo Success: dgl tested. &&
+rem %dtest% && echo Success: dgl tested.
+rem &&
 %compiler% -g -of%binPath%\dgl.lib -lib %flags% %files% && echo Success: dgl built ok.
