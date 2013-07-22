@@ -27,9 +27,6 @@ class ProgramException : Exception
         string error = format("Failed to link shaders:\n%s", log);
         super(error);
     }
-
-    /// The file the shader was read from.
-    const(char)[] fileName;
 }
 
 /**
