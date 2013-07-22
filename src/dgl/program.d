@@ -94,6 +94,8 @@ struct Program
         return _data.getUniform(uniformName);
     }
 
+    // todo: add getFragment: glGetFragDataLocation
+
     /** Set the $(D uniform) value in this program. */
     void setUniform1f(Uniform uniform, float value)
     {
