@@ -33,7 +33,7 @@ Run the `build.bat` file to both run the unittests and generate a static library
 
 - [minilib](https://github.com/AndrejMitrovic/minilib)
 - [Derelict3](https://github.com/aldacron/Derelict3)
-- [glwf](https://github.com/D-Programming-Deimos/glfw)
+- [glfw](https://github.com/D-Programming-Deimos/glfw)
 
 ## License
 
