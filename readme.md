@@ -3,7 +3,7 @@
 This is a personal D OpenGL API wrapper library, and a work in progress. It uses [Derelict3] to dynamically load the OpenGL shared libraries, and uses [glfw] in its test-suite for window management.
 
 [Derelict3]: https://github.com/aldacron/Derelict3
-[glfw](https://github.com/D-Programming-Deimos/glfw)
+[glfw]: https://github.com/D-Programming-Deimos/glfw
 
 This is a personal library and does not have any feature list / plans / or any guarantees that it will work for you.
 
