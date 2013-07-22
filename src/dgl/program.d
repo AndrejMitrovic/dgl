@@ -125,7 +125,7 @@ private struct ProgramImpl
         foreach (shader; shaders)
             verify!glAttachShader(_programID, shader.shaderID);
 
-        link();
+        this.link();
 
         foreach (shader; shaders)
             verify!glDetachShader(_programID, shader.shaderID);

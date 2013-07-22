@@ -11,20 +11,14 @@ import derelict.opengl3.gl3;
 /** An OpenGL uniform location. */
 struct Uniform
 {
-    /**
-        Construct the Uniform.
-
-        A valid uniform can only be constructed from
-        within the library, since it has to be
-        queried for in the OpenGL program.
-    */
-    package this(GLuint uniformLocation)
+    /** Construct a uniform with the given $(D uniformID). */
+    this(GLint uniformID)
     {
-        _uniformID = uniformLocation;
+        _uniformID = uniformID;
     }
 
 package:
-    GLuint _uniformID = invalidUniformID;
+    GLint _uniformID = invalidUniformID;
 
     private enum invalidUniformID = -1;
 }

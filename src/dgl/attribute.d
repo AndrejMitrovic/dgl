@@ -14,7 +14,7 @@ import dgl.test.util;
 struct Attribute
 {
     /** Construct an attribute with the given $(D attributeID). */
-    this(int attributeID)
+    this(GLint attributeID)
     {
         _attributeID = attributeID;
     }
