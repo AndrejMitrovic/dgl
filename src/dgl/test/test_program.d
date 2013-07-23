@@ -24,9 +24,9 @@ import dgl.test.util;
 
 unittest
 {
-    auto shader1 = Shader(ShaderType.vertex, testShaders[0].vertex.readText);
-    auto shader2 = Shader(ShaderType.fragment, testShaders[0].fragment.readText);
-    auto program = Program(shader1, shader2);
+    auto shader1 = new Shader(ShaderType.vertex, testShaders[0].vertex.readText);
+    auto shader2 = new Shader(ShaderType.fragment, testShaders[0].fragment.readText);
+    auto program = new Program(shader1, shader2);
 
     auto offset = program.getUniform("offset");
 

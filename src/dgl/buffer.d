@@ -36,13 +36,9 @@ enum UsageHint
 /**
     The OpenGL buffer type.
 
-    This is a refcounted type which can be freely copied around.
-    Once the reference count reaches 0 the underlying OpenGL buffer
-    will be deleted.
-
-    The $(D release) method can be called for manual release of OpenGL resources.
+    The $(D release) method should be called for manual release of OpenGL resources.
 */
-struct GLBuffer
+class GLBuffer
 {
     /**
         Create and initialize an OpenGL buffer with the
@@ -82,7 +78,7 @@ struct GLBuffer
 
 private:
 
-    alias Data = RefCounted!(GLBufferImpl, RefCountedAutoInitialize.no);
+    alias Data = GLBufferImpl;
     Data _data;
 }
 
@@ -96,11 +92,6 @@ private struct GLBufferImpl
         verify!glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
         verify!glBufferData(GL_ARRAY_BUFFER, buffer.memSizeOf, buffer.ptr, cast(GLenum)usageHint);
         verify!glBindBuffer(GL_ARRAY_BUFFER, nullBufferID);
-    }
-
-    ~this()
-    {
-        release();
     }
 
     void write(T)(T[] buffer, ptrdiff_t byteOffset)
@@ -129,12 +120,6 @@ private struct GLBufferImpl
             _bufferID = invalidBufferID;
         }
     }
-
-    /// Should never perform copy
-    @disable this(this);
-
-    /// Should never perform assign
-    @disable void opAssign(typeof(this));
 
     /* Buffer data. */
     GLuint _bufferID = invalidBufferID;

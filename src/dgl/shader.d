@@ -48,13 +48,9 @@ class ShaderException : Exception
 /**
     The OpenGL shader type.
 
-    This is a refcounted type which can be freely copied around.
-    Once the reference count reaches 0 the underlying shader
-    will be deleted.
-
-    The $(D release) method can be called for manual release of OpenGL resources.
+    The $(D release) method should be called for manual release of OpenGL resources.
 */
-struct Shader
+class Shader
 {
     /**
         Create a shader of type $(D shaderType) from
@@ -74,7 +70,7 @@ struct Shader
     {
         require(shaderFile.exists, "Shader file '%s' does not exist.", shaderFile);
         string shaderText = shaderFile.readText();
-        return Shader(shaderType, shaderText);
+        return new Shader(shaderType, shaderText);
     }
 
     /** Explicitly delete the OpenGL shader. */
@@ -96,8 +92,7 @@ struct Shader
     }
 
 private:
-
-    alias Data = RefCounted!(ShaderImpl, RefCountedAutoInitialize.no);
+    alias Data = ShaderImpl;
     Data _data;
 }
 
@@ -116,11 +111,6 @@ private struct ShaderImpl
 
         verify!glShaderSource(_shaderID, elemCount, &shaderPtr, &shaderLen);
         this.compileShader();
-    }
-
-    ~this()
-    {
-        release();
     }
 
     private void compileShader()
@@ -151,12 +141,6 @@ private struct ShaderImpl
             _shaderID = invalidShaderID;
         }
     }
-
-    /// Should never perform copy
-    @disable this(this);
-
-    /// Should never perform assign
-    @disable void opAssign(typeof(this));
 
     /* Shader data. */
     GLuint _shaderID = invalidShaderID;

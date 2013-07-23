@@ -32,15 +32,11 @@ class ProgramException : Exception
 /**
     The OpenGL program type.
 
-    This is a refcounted type which can be freely copied around.
-    Once the reference count reaches 0 the underlying program
-    is deleted.
-
-    The $(D release) method can be called for manual release of OpenGL resources.
+    The $(D release) method should be called for manual release of OpenGL resources.
 
     $(B Note:) The program will not call the shaders' $(B release()) method after construction.
 */
-struct Program
+class Program
 {
     /**
         Initialize the program with a list of shaders,
@@ -112,7 +108,7 @@ struct Program
     }
 
 private:
-    alias Data = RefCounted!(ProgramImpl, RefCountedAutoInitialize.no);
+    alias Data = ProgramImpl;
     Data _data;
 }
 
@@ -198,11 +194,6 @@ private struct ProgramImpl
         verify!glUniform4f(uniform._uniformID, value1, value2, value3, value4);
     }
 
-    ~this()
-    {
-        release();
-    }
-
     private void release()
     {
         if (_programID != invalidProgramID)
@@ -211,12 +202,6 @@ private struct ProgramImpl
             _programID = invalidProgramID;
         }
     }
-
-    /// Should never perform copy
-    @disable this(this);
-
-    /// Should never perform assign
-    @disable void opAssign(typeof(this));
 
     // data
     GLuint _programID = invalidProgramID;
