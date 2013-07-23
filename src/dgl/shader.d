@@ -100,6 +100,11 @@ private struct ShaderImpl
 {
     this(ShaderType shaderType, in char[] shaderText)
     {
+        //~ if (exc is null)
+        //~ {
+            //~ exc = new ResourceException();
+        //~ }
+
         require(shaderType.isValidEnum, "Shader type is uninitialized.");
 
         _shaderType = shaderType;
@@ -140,6 +145,12 @@ private struct ShaderImpl
             verify!glDeleteShader(_shaderID);
             _shaderID = invalidShaderID;
         }
+    }
+
+    debug ~this()
+    {
+        if (_shaderID != invalidShaderID)
+            stderr.writeln("OpenGL: Shader resources not released.");
     }
 
     /* Shader data. */

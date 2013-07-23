@@ -34,4 +34,5 @@ unittest
     buffer.write([1, 2]);
     buffer.write([1]);
     buffer.write([1], 1);
+    buffer.release();
 }

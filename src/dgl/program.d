@@ -203,6 +203,12 @@ private struct ProgramImpl
         }
     }
 
+    debug ~this()
+    {
+        if (_programID != invalidProgramID)
+            stderr.writeln("OpenGL: Program resources not released.");
+    }
+
     // data
     GLuint _programID = invalidProgramID;
 

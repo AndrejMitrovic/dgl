@@ -27,6 +27,8 @@ unittest
     auto shader1 = new Shader(ShaderType.vertex, testShaders[0].vertex.readText);
     auto shader2 = new Shader(ShaderType.fragment, testShaders[0].fragment.readText);
     auto program = new Program(shader1, shader2);
+    shader1.release();
+    shader2.release();
 
     auto offset = program.getUniform("offset");
 
@@ -36,4 +38,5 @@ unittest
     program.setUniform2f(offset, 1.0, 2.0);
 
     program.unbind();
+    program.release();
 }

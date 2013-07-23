@@ -41,11 +41,15 @@ unittest
     // throw on bad shader from memory
     assertThrown!ShaderException(new Shader(ShaderType.vertex, readText(badShaders[0].vertex)));
 
-    // check init and copying from file
     auto shader1 = Shader.fromFile(ShaderType.vertex, testShaders[0].vertex);
-    shader1 = new Shader(ShaderType.vertex, readText(testShaders[0].vertex));
+    shader1.release();
 
-    // check init and copying from memory
+    shader1 = new Shader(ShaderType.vertex, readText(testShaders[0].vertex));
+    shader1.release();
+
     auto shader2 = new Shader(ShaderType.vertex, readText(testShaders[0].vertex));
+    shader2.release();
+
     shader2 = new Shader(ShaderType.vertex, readText(testShaders[0].vertex));
+    shader2.release();
 }

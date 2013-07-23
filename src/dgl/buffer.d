@@ -121,6 +121,12 @@ private struct GLBufferImpl
         }
     }
 
+    debug ~this()
+    {
+        if (_bufferID != invalidBufferID)
+            stderr.writeln("OpenGL: Buffer resources not released.");
+    }
+
     /* Buffer data. */
     GLuint _bufferID = invalidBufferID;
 

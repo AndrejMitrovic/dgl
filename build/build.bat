@@ -16,7 +16,7 @@ IF NOT EXIST %DEIMOS_GLFW% do set DEIMOS_GLFW=%LIBS_ROOT%\glfw
 
 set includes=-I%MINILIB_HOME%\src -I%DERELICT3_HOME%\import -I%DEIMOS_GLFW%
 set implibs=%dglRoot%\lib\glfw3_implib.lib
-set flags=%includes% %implibs%
+set flags=%includes% %implibs% -debug
 
 rem set compiler=dmd.exe
 set compiler=dmd_msc.exe
