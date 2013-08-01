@@ -10,6 +10,7 @@ public
 {
     import dgl.attribute;
     import dgl.buffer;
+    import dgl.loader;
     import dgl.program;
     import dgl.shader;
     import dgl.uniform;
@@ -18,7 +19,6 @@ public
 private
 {
     import dgl.versions;
-    import dgl.loader;
     import dgl.test.test_buffer;
     import dgl.test.test_program;
     import dgl.test.test_shader;

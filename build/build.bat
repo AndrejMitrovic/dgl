@@ -18,8 +18,8 @@ IF NOT EXIST %GLAD_HOME% do set GLAD_HOME=%LIBS_ROOT%\glad
 set includes=-I%MINILIB_HOME%\src -I%DERELICT3_HOME%\import -I%DEIMOS_GLFW% -I%GLAD_HOME%\build
 set implibs=%dglRoot%\lib\glfw3_implib.lib
 
-rem set versions=-version=dgl_use_derelict
-set versions=-version=dgl_use_glad
+set versions=-version=dgl_use_derelict
+rem set versions=-version=dgl_use_glad
 
 set flags=%includes% %implibs% -debug %versions%
 
