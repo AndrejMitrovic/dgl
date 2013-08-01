@@ -13,10 +13,15 @@ set "LIBS_ROOT=%CD%\..\..
 IF NOT EXIST %MINILIB_HOME% do set MINILIB_HOME=%LIBS_ROOT%\minilib
 IF NOT EXIST %DERELICT3_HOME% do set DERELICT3_HOME=%LIBS_ROOT%\Derelict3
 IF NOT EXIST %DEIMOS_GLFW% do set DEIMOS_GLFW=%LIBS_ROOT%\glfw
+IF NOT EXIST %GLAD_HOME% do set GLAD_HOME=%LIBS_ROOT%\glad
 
-set includes=-I%MINILIB_HOME%\src -I%DERELICT3_HOME%\import -I%DEIMOS_GLFW%
+set includes=-I%MINILIB_HOME%\src -I%DERELICT3_HOME%\import -I%DEIMOS_GLFW% -I%GLAD_HOME%\build
 set implibs=%dglRoot%\lib\glfw3_implib.lib
-set flags=%includes% %implibs% -debug
+
+rem set versions=-version=dgl_use_derelict
+set versions=-version=dgl_use_glad
+
+set flags=%includes% %implibs% -debug %versions%
 
 rem set compiler=dmd.exe
 set compiler=dmd_msc.exe

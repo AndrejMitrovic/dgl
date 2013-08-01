@@ -18,8 +18,7 @@ import std.string;
 
 import minilib.core.test;
 
-import derelict.opengl3.gl3;
-
+import dgl.loader;
 import dgl.shader;
 import dgl.test.util;
 

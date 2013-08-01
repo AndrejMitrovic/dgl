@@ -6,7 +6,7 @@
  */
 module dgl.uniform;
 
-import derelict.opengl3.gl3;
+import dgl.loader;
 
 /** An OpenGL uniform location. */
 struct Uniform

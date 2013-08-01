@@ -12,9 +12,9 @@ import std.typecons;
 import minilib.core.array;
 import minilib.core.test;
 
-import derelict.opengl3.gl3;
-
 import dgl.attribute;
+import dgl.loader;
+
 import dgl.test.util;
 
 /// All possible OpenGL usage hints

@@ -17,6 +17,8 @@ public
 
 private
 {
+    import dgl.versions;
+    import dgl.loader;
     import dgl.test.test_buffer;
     import dgl.test.test_program;
     import dgl.test.test_shader;

@@ -16,8 +16,7 @@ import std.file;
 
 import minilib.core.test;
 
-import derelict.opengl3.gl3;
-
+import dgl.loader;
 import dgl.program;
 import dgl.shader;
 import dgl.test.util;

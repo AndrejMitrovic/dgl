@@ -6,7 +6,7 @@
  */
 module dgl.attribute;
 
-import derelict.opengl3.gl3;
+import dgl.loader;
 
 import dgl.test.util;
 

@@ -18,13 +18,9 @@ import std.traits;
 
 import minilib.core.test;
 
-import derelict.opengl3.gl;
-import derelict.opengl3.gl3;
-import derelict.opengl3.deprecatedConstants;
-import derelict.opengl3.constants;
-
 import deimos.glfw.glfw3;
 
+import dgl.loader;
 import dgl.shader;
 
 ///
@@ -47,8 +43,8 @@ version(unittest)
     /** Initialize GLWF, an OpenGL context, and load Derelict3 function pointers. */
     private void createContext()
     {
-        // initialize derelict
-        DerelictGL.load();
+        // initialize GL
+        initGL();
 
         // initialize glwf
         auto res = glfwInit();
@@ -66,8 +62,8 @@ version(unittest)
         // Make the window's context current
         glfwMakeContextCurrent(window);
 
-        // load all derelict function pointers
-        DerelictGL.reload();
+        // load all function pointers
+        loadGL();
     }
 
     /** Deinitialize GLWF and other contexts. */
@@ -113,9 +109,9 @@ version(unittest)
 
         string vertexFile = "good_vertex_1";
         vertexFile.writeFile(q{
-            #version 330
+            #version 130
 
-            layout(location = 0) in vec4 position;
+            in vec4 position;
             uniform vec2 offset;
 
             void main()
@@ -128,7 +124,7 @@ version(unittest)
 
         string fragmentFile = "good_fragment_1";
         fragmentFile.writeFile(q{
-            #version 330
+            #version 130
 
             out vec4 fragColor;
 
@@ -171,7 +167,7 @@ version(unittest)
 ///
 auto verify(alias func, string file = __FILE__, size_t line = __LINE__, Args...)(Args args)
 {
-    //~ require(func !is null, "Function pointer '%s' is not loaded. Please verify that 'DerelictGL.load()' and 'DerelictGL.reload()' were called first.", __traits(identifier, func));
+    require(func !is null, "Function pointer '%s' is not loaded. Please verify that 'DerelictGL.load()' and 'DerelictGL.reload()' were called first.", __traits(identifier, func));
 
     static if (is(ReturnType!(typeof(func)) == void))
         func(args);
