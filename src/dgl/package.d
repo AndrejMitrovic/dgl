@@ -19,6 +19,7 @@ public
 private
 {
     import dgl.test.test_buffer;
+    import dgl.test.test_exceptions;
     import dgl.test.test_program;
     import dgl.test.test_shader;
 }

@@ -121,32 +121,32 @@ private struct ProgramImpl
 {
     this(Shader[] shaders...)
     {
-        _programID = verify!glCreateProgram();
+        _programID = glCreateProgram();
 
         foreach (shader; shaders)
-            verify!glAttachShader(_programID, shader.shaderID);
+            glAttachShader(_programID, shader.shaderID);
 
         this.link();
 
         foreach (shader; shaders)
-            verify!glDetachShader(_programID, shader.shaderID);
+            glDetachShader(_programID, shader.shaderID);
     }
 
     private void link()
     {
-        verify!glLinkProgram(_programID);
+        glLinkProgram(_programID);
 
         GLint status;
-        verify!glGetProgramiv(_programID, GL_LINK_STATUS, &status);
+        glGetProgramiv(_programID, GL_LINK_STATUS, &status);
         if (status == GL_TRUE)
             return;
 
         /* read the error log and throw */
         GLint logLength;
-        verify!glGetProgramiv(_programID, GL_INFO_LOG_LENGTH, &logLength);
+        glGetProgramiv(_programID, GL_INFO_LOG_LENGTH, &logLength);
 
         GLchar[] logBuff = new GLchar[logLength];
-        verify!glGetProgramInfoLog(_programID, logLength, null, logBuff.ptr);
+        glGetProgramInfoLog(_programID, logLength, null, logBuff.ptr);
 
         auto log = logBuff[0 .. logLength - 1];
         throw new ProgramException(log);
@@ -154,17 +154,17 @@ private struct ProgramImpl
 
     private void bind()
     {
-        verify!glUseProgram(_programID);
+        glUseProgram(_programID);
     }
 
     private void unbind()
     {
-        verify!glUseProgram(nullProgramID);
+        glUseProgram(nullProgramID);
     }
 
     private Attribute getAttribute(string attributeName)
     {
-        auto attributeLocation = verify!glGetAttribLocation(_programID, attributeName.toStringz);
+        auto attributeLocation = glGetAttribLocation(_programID, attributeName.toStringz);
 
         if (attributeLocation < 0)
             stderr.writefln("Warning: 'glGetAttribLocation' returned '%s' for location: '%s'",
@@ -175,7 +175,7 @@ private struct ProgramImpl
 
     private Uniform getUniform(string uniformName)
     {
-        auto uniformLocation = verify!glGetUniformLocation(_programID, uniformName.toStringz);
+        auto uniformLocation = glGetUniformLocation(_programID, uniformName.toStringz);
 
         if (uniformLocation < 0)
             stderr.writefln("Warning: 'glGetUniformLocation' returned '%s' for location: '%s'",
@@ -186,29 +186,29 @@ private struct ProgramImpl
 
     private void setUniform1i(Uniform uniform, int value)
     {
-        verify!glUniform1i(uniform._uniformID, value);
+        glUniform1i(uniform._uniformID, value);
     }
 
     private void setUniform1f(Uniform uniform, float value)
     {
-        verify!glUniform1f(uniform._uniformID, value);
+        glUniform1f(uniform._uniformID, value);
     }
 
     private void setUniform2f(Uniform uniform, float value1, float value2)
     {
-        verify!glUniform2f(uniform._uniformID, value1, value2);
+        glUniform2f(uniform._uniformID, value1, value2);
     }
 
     private void setUniform4f(Uniform uniform, float value1, float value2, float value3, float value4)
     {
-        verify!glUniform4f(uniform._uniformID, value1, value2, value3, value4);
+        glUniform4f(uniform._uniformID, value1, value2, value3, value4);
     }
 
     private void release()
     {
         if (_programID != invalidProgramID)
         {
-            verify!glDeleteProgram(_programID);
+            glDeleteProgram(_programID);
             _programID = invalidProgramID;
         }
     }

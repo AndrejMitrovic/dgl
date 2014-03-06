@@ -91,35 +91,35 @@ private struct GLBufferImpl
     {
         require(usageHint.isValidEnum, "Usage hint is uninitialized.");
 
-        verify!glGenBuffers(bufferCount, &_bufferID);
-        verify!glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
-        verify!glBufferData(GL_ARRAY_BUFFER, buffer.memSizeOf, buffer.ptr, cast(GLenum)usageHint);
-        verify!glBindBuffer(GL_ARRAY_BUFFER, nullBufferID);
+        glGenBuffers(bufferCount, &_bufferID);
+        glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
+        glBufferData(GL_ARRAY_BUFFER, buffer.memSizeOf, buffer.ptr, cast(GLenum)usageHint);
+        glBindBuffer(GL_ARRAY_BUFFER, nullBufferID);
     }
 
     void write(T)(T[] buffer, ptrdiff_t byteOffset)
     {
-        verify!glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
-        verify!glBufferSubData(GL_ARRAY_BUFFER, byteOffset, buffer.memSizeOf, buffer.ptr);
-        verify!glBindBuffer(GL_ARRAY_BUFFER, nullBufferID);
+        glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
+        glBufferSubData(GL_ARRAY_BUFFER, byteOffset, buffer.memSizeOf, buffer.ptr);
+        glBindBuffer(GL_ARRAY_BUFFER, nullBufferID);
     }
 
     void bind(Attribute attribute, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLsizei offset)
     {
-        verify!glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
-        verify!glVertexAttribPointer(attribute._attributeID, size, type, normalized, stride, cast(void*)offset);
+        glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
+        glVertexAttribPointer(attribute._attributeID, size, type, normalized, stride, cast(void*)offset);
     }
 
     void unbind()
     {
-        verify!glBindBuffer(GL_ARRAY_BUFFER, nullBufferID);
+        glBindBuffer(GL_ARRAY_BUFFER, nullBufferID);
     }
 
     void release()
     {
         if (_bufferID != invalidBufferID)
         {
-            verify!glDeleteBuffers(bufferCount, &_bufferID);
+            glDeleteBuffers(bufferCount, &_bufferID);
             _bufferID = invalidBufferID;
         }
     }

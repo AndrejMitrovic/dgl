@@ -26,7 +26,7 @@ struct Attribute
     */
     void enable()
     {
-        verify!glEnableVertexAttribArray(cast(GLint)_attributeID);
+        glEnableVertexAttribArray(cast(GLint)_attributeID);
     }
 
     /**
@@ -34,7 +34,7 @@ struct Attribute
     */
     void disable()
     {
-        verify!glDisableVertexAttribArray(cast(GLint)_attributeID);
+        glDisableVertexAttribArray(cast(GLint)_attributeID);
     }
 
 package:

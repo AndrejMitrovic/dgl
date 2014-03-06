@@ -17,6 +17,7 @@ import std.string;
 import std.traits;
 
 import minilib.core.test;
+import minilib.core.typecons;
 
 import deimos.glfw.glfw3;
 
@@ -25,6 +26,9 @@ import dgl.shader;
 
 ///
 public alias writeFile = std.file.write;
+
+///
+mixin NewException!"GLException";
 
 version(unittest)
 {
@@ -38,6 +42,22 @@ version(unittest)
     {
         destroyContext();
         removeTestShaders();
+    }
+
+    /**
+        GL_ARB_debug_output or GL_KHR_debug callback.
+
+        Throwing exceptions across language boundaries should be fine as
+        long as $(B GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB) was enabled.
+
+        This will emit proper stack traces.
+    */
+    extern (Windows)
+    private void dgl_error_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, in GLchar* message, GLvoid* userParam)
+    {
+        string msg = format("source: %s, type: %s, id: %s, severity: %s, length: %s, message: %s, userParam: %s",
+                             source, type, id, severity, length, message.to!string, userParam);
+        throw new GLException(msg);
     }
 
     /** Initialize GLWF, an OpenGL context, and load Derelict3 function pointers. */
@@ -55,15 +75,43 @@ version(unittest)
         // set the window to inivisible since it will only briefly appear during testing
         glfwWindowHint(GLFW_VISIBLE, 0);
 
+        // enable debugging
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+
+        // require GL 3.3x
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+
+        // require CORE profile, and forward compatible
+        glfwWindowHint(GLFW_OPENGL_CORE_PROFILE, 1);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, 1);
+
         // Create a windowed mode window and its OpenGL context
         auto window = require(glfwCreateWindow(640, 480, "Hello World", null, null),
-                "glfwCreateWindow call failed.");
+                              "glfwCreateWindow call failed.");
 
         // Make the window's context current
         glfwMakeContextCurrent(window);
 
-        // load all function pointers
         loadGL();
+
+        // supporting only GL 3.3x+
+        enforce(GLVersion.major > 3 || (GLVersion.major == 3 && GLVersion.minor == 3));
+
+        // ensure the debug output extension is supported
+        enforce(GL_ARB_debug_output || GL_KHR_debug);
+
+        // cast: workaround for 'nothrow' propagation bug (haven't been able to reduce it)
+        auto hookDebugCallback = GL_ARB_debug_output ? glDebugMessageCallbackARB
+                                                     : cast(typeof(glDebugMessageCallbackARB))glDebugMessageCallback;
+
+
+        // hook the debug callback
+        // cast: derelict assumes its nothrow
+        hookDebugCallback(cast(GLDEBUGPROCARB)&dgl_error_callback, null);
+
+        // enable stack traces (otherwise we'd get random failures at runtime)
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
     }
 
     /** Deinitialize GLWF and other contexts. */
@@ -162,33 +210,6 @@ version(unittest)
         foreach (group; chain(testShaders, badShaders))
             group.remove();
     }
-}
-
-///
-auto verify(alias func, string file = __FILE__, size_t line = __LINE__, Args...)(Args args)
-{
-    require(func !is null, "Function pointer '%s' is not loaded. Please verify that 'DerelictGL.load()' and 'DerelictGL.reload()' were called first.", __traits(identifier, func));
-
-    static if (is(ReturnType!(typeof(func)) == void))
-        func(args);
-    else
-        auto result = func(args);
-
-    GLenum lastError = glGetError();
-    if (lastError != GL_NO_ERROR)
-    {
-        stderr.writeln(lastError.toString());
-
-        //~ stderr.writefln("%s: %s(%s) failed with: %s",
-            //~ file, line, __traits(identifier, func), lastError.toString());
-
-        //~ string argsStr = format("%s".repeat(Args.length).join(", "), args);
-        //~ stderr.writefln("%s(%s): %s(%s) failed with: %s",
-            //~ file, line, __traits(identifier, func), argsStr, lastError.toString());
-    }
-
-    static if (!is(ReturnType!func == void))
-        return result;
 }
 
 /// Converts an OpenGL errorenum to a string

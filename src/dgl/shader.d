@@ -103,31 +103,31 @@ private struct ShaderImpl
         require(shaderType.isValidEnum, "Shader type is uninitialized.");
 
         _shaderType = shaderType;
-        _shaderID = verify!glCreateShader(cast(GLenum)shaderType);
+        _shaderID = glCreateShader(cast(GLenum)shaderType);
 
         auto shaderPtr = shaderText.ptr;
         auto shaderLen = cast(int)shaderText.length;
         enum elemCount = 1;
 
-        verify!glShaderSource(_shaderID, elemCount, &shaderPtr, &shaderLen);
+        glShaderSource(_shaderID, elemCount, &shaderPtr, &shaderLen);
         this.compileShader();
     }
 
     private void compileShader()
     {
-        verify!glCompileShader(_shaderID);
+        glCompileShader(_shaderID);
 
         GLint status;
-        verify!glGetShaderiv(_shaderID, GL_COMPILE_STATUS, &status);
+        glGetShaderiv(_shaderID, GL_COMPILE_STATUS, &status);
         if (status == GL_TRUE)
             return;
 
         /* read the error log and throw */
         GLint logLength;
-        verify!glGetShaderiv(_shaderID, GL_INFO_LOG_LENGTH, &logLength);
+        glGetShaderiv(_shaderID, GL_INFO_LOG_LENGTH, &logLength);
 
         GLchar[] logBuff = new GLchar[logLength];
-        verify!glGetShaderInfoLog(_shaderID, logLength, null, logBuff.ptr);
+        glGetShaderInfoLog(_shaderID, logLength, null, logBuff.ptr);
 
         auto log = logBuff[0 .. logLength - 1];
         throw new ShaderException(_shaderType, log);
@@ -137,7 +137,7 @@ private struct ShaderImpl
     {
         if (_shaderID != invalidShaderID)
         {
-            verify!glDeleteShader(_shaderID);
+            glDeleteShader(_shaderID);
             _shaderID = invalidShaderID;
         }
     }
