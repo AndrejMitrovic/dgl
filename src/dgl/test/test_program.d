@@ -23,8 +23,8 @@ import dgl.test.util;
 
 unittest
 {
-    auto shader1 = new Shader(ShaderType.vertex, testShaders[0].vertex.readText);
-    auto shader2 = new Shader(ShaderType.fragment, testShaders[0].fragment.readText);
+    auto shader1 = Shader.fromText(ShaderType.vertex, testShaders[0].vertex.readText);
+    auto shader2 = Shader.fromText(ShaderType.fragment, testShaders[0].fragment.readText);
     auto program = new Program(shader1, shader2);
     shader1.release();
     shader2.release();

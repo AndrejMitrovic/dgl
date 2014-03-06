@@ -56,10 +56,9 @@ class Shader
         Create a shader of type $(D shaderType) from
         the shader code in $(D shaderText).
     */
-    this(ShaderType shaderType, in char[] shaderText)
+    static Shader fromText(ShaderType shaderType, in char[] shaderText)
     {
-        require(!shaderText.exists, "Attempted to pass a shader file '%s' instead of the shader code. Use 'Shader.fromFile' to load a shader from disk.", shaderText);
-        _data = Data(shaderType, shaderText);
+        return new Shader(shaderType, shaderText);
     }
 
     /**
@@ -70,7 +69,13 @@ class Shader
     {
         require(shaderFile.exists, "Shader file '%s' does not exist.", shaderFile);
         string shaderText = shaderFile.readText();
-        return new Shader(shaderType, shaderText);
+        return fromText(shaderType, shaderText);
+    }
+
+    ///
+    private this(ShaderType shaderType, in char[] shaderText)
+    {
+        _data = Data(shaderType, shaderText);
     }
 
     /** Explicitly delete the OpenGL shader. */
