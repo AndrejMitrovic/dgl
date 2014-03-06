@@ -76,6 +76,9 @@ class GLBuffer
         _data.release();
     }
 
+    ///
+    @property GLuint ID() { return _data._bufferID; }
+
 private:
 
     alias Data = GLBufferImpl;

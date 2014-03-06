@@ -8,9 +8,7 @@ module dgl.loader;
 
 import std.exception;
 
-import dgl.versions;
-
-static if (DGL_Versions.use_derelict)
+version (dgl_use_derelict)
 {
     public
     {
@@ -36,20 +34,18 @@ static if (DGL_Versions.use_derelict)
     }
 }
 else
-static if (DGL_Versions.use_glad)
+version (dgl_use_glad)
 {
     public
     {
-        import glad.gl;
+        import glad.gl.gl;
     }
 
-    import glad.loader;
+    import glad.gl.loader;
 
-    /// Initialize GL
+    /// no-op: not required for glad.
     void initGL()
     {
-        // initialize glad
-        enforce(gladInit());
     }
 
     /// Load GL

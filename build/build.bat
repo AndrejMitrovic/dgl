@@ -21,12 +21,12 @@ set implibs=%dglRoot%\lib\glfw3_implib.lib
 set versions=-version=dgl_use_derelict
 rem set versions=-version=dgl_use_glad
 
-set flags=%includes% %implibs% -debug %versions%
+set flags=%includes% %implibs% %versions%
 
-rem set compiler=dmd.exe
-set compiler=dmd_msc.exe
+set compiler=dmd.exe
+rem set compiler=dmd_msc.exe
 rem set compiler=ldmd2.exe
 
 set dtest=rdmd -of%binPath%\dgl_test.exe --main -unittest -g --force --compiler=%compiler% %flags% dgl\package.d
 
-%dtest% && echo Success: dgl tested. && %compiler% -g -of%binPath%\dgl.lib -lib %flags% %files% && echo Success: dgl built ok.
+%dtest% && echo Success: dgl tested. && %compiler% -g -of%binPath%\dgl.lib -lib %flags% %files% && echo Success: dgl built.

@@ -100,11 +100,6 @@ private struct ShaderImpl
 {
     this(ShaderType shaderType, in char[] shaderText)
     {
-        //~ if (exc is null)
-        //~ {
-            //~ exc = new ResourceException();
-        //~ }
-
         require(shaderType.isValidEnum, "Shader type is uninitialized.");
 
         _shaderType = shaderType;

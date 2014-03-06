@@ -95,6 +95,12 @@ class Program
     }
 
     /// ditto
+    void setUniform1i(Uniform uniform, int value)
+    {
+        _data.setUniform1i(uniform, value);
+    }
+
+    /// ditto
     void setUniform2f(Uniform uniform, float value1, float value2)
     {
         _data.setUniform2f(uniform, value1, value2);
@@ -176,6 +182,11 @@ private struct ProgramImpl
                             uniformLocation, uniformName);
 
         return Uniform(uniformLocation);
+    }
+
+    private void setUniform1i(Uniform uniform, int value)
+    {
+        verify!glUniform1i(uniform._uniformID, value);
     }
 
     private void setUniform1f(Uniform uniform, float value)

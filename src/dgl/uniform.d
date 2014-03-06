@@ -17,6 +17,12 @@ struct Uniform
         _uniformID = uniformID;
     }
 
+    /// Temporary
+    @property GLint ID()
+    {
+        return _uniformID;
+    }
+
 package:
     GLint _uniformID = invalidUniformID;
 
