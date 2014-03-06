@@ -19,6 +19,16 @@ import dgl.loader;
 
 import dgl.test.util;
 
+///
+class ShaderException : Exception
+{
+    this(ShaderType shaderType, in char[] log)
+    {
+        string error = format("Failed to compile shader of type '%s':\n%s", shaderType, log);
+        super(error);
+    }
+}
+
 /// All possible OpenGL shader types
 enum ShaderType
 {
@@ -33,16 +43,6 @@ enum ShaderType
 
     ///
     fragment = GL_FRAGMENT_SHADER,
-}
-
-///
-class ShaderException : Exception
-{
-    this(ShaderType shaderType, in char[] log)
-    {
-        string error = format("Failed to compile shader of type '%s':\n%s", shaderType, log);
-        super(error);
-    }
 }
 
 /**
@@ -72,13 +72,13 @@ class Shader
         return fromText(shaderType, shaderText);
     }
 
-    ///
+    // Use $(D fromText) or $(D fromFile).
     private this(ShaderType shaderType, in char[] shaderText)
     {
         _data = Data(shaderType, shaderText);
     }
 
-    /** Explicitly delete the OpenGL shader. */
+    /** Explicitly release the OpenGL shader. */
     void release()
     {
         _data.release();
@@ -127,7 +127,7 @@ private struct ShaderImpl
         if (status == GL_TRUE)
             return;
 
-        /* read the error log and throw */
+        /* read the error log and throw. */
         GLint logLength;
         glGetShaderiv(_shaderID, GL_INFO_LOG_LENGTH, &logLength);
 
@@ -150,7 +150,7 @@ private struct ShaderImpl
     debug ~this()
     {
         if (_shaderID != invalidShaderID)
-            stderr.writeln("OpenGL: Shader resources not released.");
+            stderr.writefln("%s(%s): OpenGL: Shader resources not released.", __FILE__, __LINE__);
     }
 
     /* Shader data. */

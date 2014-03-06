@@ -127,7 +127,7 @@ private struct GLBufferImpl
     debug ~this()
     {
         if (_bufferID != invalidBufferID)
-            stderr.writeln("OpenGL: Buffer resources not released.");
+            stderr.writefln("%s(%s): OpenGL: Buffer resources not released.", __FILE__, __LINE__);
     }
 
     /* Buffer data. */

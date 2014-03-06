@@ -216,7 +216,7 @@ private struct ProgramImpl
     debug ~this()
     {
         if (_programID != invalidProgramID)
-            stderr.writeln("OpenGL: Program resources not released.");
+            stderr.writefln("%s(%s): OpenGL: Program resources not released.", __FILE__, __LINE__);
     }
 
     // data
