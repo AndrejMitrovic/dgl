@@ -10,13 +10,12 @@ set "files="
 for /r %%i in (*.d) do set files=!files! %%i
 
 set "LIBS_ROOT=%CD%\..\..
-IF NOT EXIST %MINILIB_HOME% do set MINILIB_HOME=%LIBS_ROOT%\minilib
 IF NOT EXIST %DERELICT_GL_HOME% do set DERELICT_GL_HOME=%LIBS_ROOT%\DerelictGL3
 IF NOT EXIST %DERELICT_UTIL_HOME% do set DERELICT_UTIL_HOME=%LIBS_ROOT%\DerelictUtil
 IF NOT EXIST %DEIMOS_GLFW% do set DEIMOS_GLFW=%LIBS_ROOT%\glfw
 IF NOT EXIST %GLAD_HOME% do set GLAD_HOME=%LIBS_ROOT%\glad
 
-set includes=-I%MINILIB_HOME%\src -I%DERELICT_GL_HOME%\source -I%DERELICT_UTIL_HOME%\source -I%DEIMOS_GLFW% -I%GLAD_HOME%\build
+set includes=-I%DERELICT_GL_HOME%\source -I%DERELICT_UTIL_HOME%\source -I%DEIMOS_GLFW% -I%GLAD_HOME%\build
 set implibs=%dglRoot%\lib\glfw3_implib.lib
 
 rem set versions=-version=dgl_use_derelict

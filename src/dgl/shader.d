@@ -6,6 +6,7 @@
  */
 module dgl.shader;
 
+import std.algorithm;
 import std.file;
 import std.exception;
 import std.path;
@@ -13,21 +14,17 @@ import std.stdio;
 import std.string;
 import std.typecons;
 
-import minilib.core.test;
-
 import dgl.loader;
 
-import dgl.test.util;
-
 ///
-class ShaderException : Exception
+/+ class ShaderException : Exception
 {
     this(ShaderType shaderType, in char[] log)
     {
         string error = format("Failed to compile shader of type '%s':\n%s", shaderType, log);
         super(error);
     }
-}
+} +/
 
 /// All possible OpenGL shader types
 enum ShaderType
@@ -67,7 +64,7 @@ class Shader
     */
     static Shader fromFile(ShaderType shaderType, in char[] shaderFile)
     {
-        require(shaderFile.exists, "Shader file '%s' does not exist.", shaderFile);
+        enforce(shaderFile.exists, "Shader file '%s' does not exist.".format(shaderFile));
         string shaderText = shaderFile.readText();
         return fromText(shaderType, shaderText);
     }
@@ -105,7 +102,7 @@ private struct ShaderImpl
 {
     this(ShaderType shaderType, in char[] shaderText)
     {
-        require(shaderType.isValidEnum, "Shader type is uninitialized.");
+        enforce(shaderType != ShaderType.invalid, "Shader type is uninitialized.");
 
         _shaderType = shaderType;
         _shaderID = glCreateShader(cast(GLenum)shaderType);
@@ -126,16 +123,6 @@ private struct ShaderImpl
         glGetShaderiv(_shaderID, GL_COMPILE_STATUS, &status);
         if (status == GL_TRUE)
             return;
-
-        /* read the error log and throw. */
-        GLint logLength;
-        glGetShaderiv(_shaderID, GL_INFO_LOG_LENGTH, &logLength);
-
-        GLchar[] logBuff = new GLchar[logLength];
-        glGetShaderInfoLog(_shaderID, logLength, null, logBuff.ptr);
-
-        auto log = logBuff[0 .. logLength - 1];
-        throw new ShaderException(_shaderType, log);
     }
 
     void release()

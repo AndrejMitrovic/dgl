@@ -8,8 +8,6 @@ module dgl.attribute;
 
 import dgl.loader;
 
-import dgl.test.util;
-
 /** An OpenGL attribute location. */
 struct Attribute
 {

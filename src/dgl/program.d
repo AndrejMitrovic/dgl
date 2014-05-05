@@ -7,6 +7,7 @@
 module dgl.program;
 
 import std.array;
+import std.exception;
 import std.stdio;
 import std.string;
 import std.typecons;
@@ -16,17 +17,66 @@ import dgl.loader;
 import dgl.shader;
 import dgl.uniform;
 
-import dgl.test.util;
-
 ///
-class ProgramException : Exception
+/+ class ProgramException : Exception
 {
     this(in char[] log)
     {
         string error = format("Failed to link shaders:\n%s", log);
         super(error);
     }
-}
+} +/
+
+//
+/+ private enum isSupported(alias symbol, T = typeof(symbol))
+    = is(T == Attribute) || is(T == Uniform); +/
+
+/** A generic getter for uniforms and attributes in a program. */
+/+ @property typeof(symbol) get(alias symbol)(Program program)
+    if (isSupported!symbol)
+{
+    return get!(symbol, __traits(identifier, symbol))(program);
+} +/
+
+/**
+    Ditto, but supports using a custom name in the shader
+    that doesn't match the symbol name.
+*/
+/+ @property typeof(symbol) get(alias symbol, string name)(Program program)
+    if (isSupported!symbol)
+{
+    return get!symbol(program, name);
+} +/
+
+/** Ditto, but the custom shader field name is a runtime value. */
+/+ @property typeof(symbol) get(alias symbol)(Program program, string name)
+    if (isSupported!symbol)
+{
+    alias Type = typeof(symbol);
+
+    static if (is(Type == Attribute))
+        return symbol = program.getAttribute(name);
+    else
+    static if (is(Type == Uniform))
+        return symbol = program.getUniform(name);
+    else
+    static assert(0);
+} +/
+
+/** A generic setter for uniforms and attributes in a program. */
+/+ void set(alias symbol, Args...)(Program program, Args args)
+    if (isSupported!symbol)
+{
+    alias Type = typeof(symbol);
+
+    static if (is(Type == Attribute))
+        program.setAttribute(symbol, args);
+    else
+    static if (is(Type == Uniform))
+        program.setUniform(symbol, args);
+    else
+    static assert(0);
+} +/
 
 /**
     The OpenGL program type.
@@ -89,7 +139,7 @@ class Program
     // todo: add getFragment: glGetFragDataLocation
 
     /** Set the $(D uniform) value in this program. */
-    void setUniform1f(Uniform uniform, float value)
+    void setUniform(Uniform uniform, float value)
     {
         _data.setUniform1f(uniform, value);
     }
@@ -110,6 +160,11 @@ class Program
     void setUniform4f(Uniform uniform, float value1, float value2, float value3, float value4)
     {
         _data.setUniform4f(uniform, value1, value2, value3, value4);
+    }
+
+    void setUniform2i(Uniform uniform, int value1, int value2)
+    {
+        _data.setUniform2i(uniform, value1, value2);
     }
 
 private:
@@ -141,7 +196,10 @@ private struct ProgramImpl
         if (status == GL_TRUE)
             return;
 
-        /* read the error log and throw */
+        // todo: need to figure out why this path is continued even when
+        // dgl_error_callback throws.
+
+        /+ /* read the error log and throw */
         GLint logLength;
         glGetProgramiv(_programID, GL_INFO_LOG_LENGTH, &logLength);
 
@@ -149,7 +207,7 @@ private struct ProgramImpl
         glGetProgramInfoLog(_programID, logLength, null, logBuff.ptr);
 
         auto log = logBuff[0 .. logLength - 1];
-        throw new ProgramException(log);
+        throw new ProgramException(log); +/
     }
 
     private void bind()
@@ -165,22 +223,18 @@ private struct ProgramImpl
     private Attribute getAttribute(string attributeName)
     {
         auto attributeLocation = glGetAttribLocation(_programID, attributeName.toStringz);
-
-        if (attributeLocation < 0)
-            stderr.writefln("Warning: 'glGetAttribLocation' returned '%s' for location: '%s'",
-                            attributeLocation, attributeName);
-
+        enforce(attributeLocation >= 0,
+                format("glGetAttribLocation returned '%s' for location: '%s'",
+                       attributeLocation, attributeName));
         return Attribute(attributeLocation);
     }
 
     private Uniform getUniform(string uniformName)
     {
         auto uniformLocation = glGetUniformLocation(_programID, uniformName.toStringz);
-
-        if (uniformLocation < 0)
-            stderr.writefln("Warning: 'glGetUniformLocation' returned '%s' for location: '%s'",
-                            uniformLocation, uniformName);
-
+        enforce(uniformLocation >= 0,
+                format("glGetUniformLocation returned '%s' for location: '%s'",
+                       uniformLocation, uniformName));
         return Uniform(uniformLocation);
     }
 
@@ -192,6 +246,11 @@ private struct ProgramImpl
     private void setUniform1f(Uniform uniform, float value)
     {
         glUniform1f(uniform._uniformID, value);
+    }
+
+    private void setUniform2i(Uniform uniform, int value1, int value2)
+    {
+        glUniform2i(uniform._uniformID, value1, value2);
     }
 
     private void setUniform2f(Uniform uniform, float value1, float value2)

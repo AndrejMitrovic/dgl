@@ -1,0 +1,35 @@
+{
+	"name": "dgl",
+
+    "targetName": "dgl",
+
+    "description": "dgl is a personal and minimal D OpenGL wrapper library.",
+
+    "authors": ["Andrej Mitrovic"],
+
+    "homepage": "https://github.com/AndrejMitrovic/dgl",
+
+    "copyright": "Copyright © 2014, Andrej Mitrovic",
+
+    "license": "BSL-1.0",
+
+    "configurations": [
+		{
+			"name": "dgl-derelict",
+			"targetType": "staticLibrary",
+			"targetPath": "bin",
+            "dependencies": {
+                "derelict-gl3": "~master"
+            },
+		},
+		{
+			"name": "dgl-glad",
+			"targetType": "staticLibrary",
+			"targetPath": "bin",
+            "dependencies": {
+                "glad-drey": ">=0.0.1"
+            },
+		},
+
+	]
+}

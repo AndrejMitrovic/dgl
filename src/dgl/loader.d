@@ -8,11 +8,10 @@ module dgl.loader;
 
 import std.exception;
 
-version (dgl_use_derelict)
+version (Have_derelict_gl3)
 {
     public
     {
-        import derelict.opengl3.gl3;
         import derelict.opengl3.gl;
         import derelict.opengl3.gl3;
         import derelict.opengl3.deprecatedConstants;
@@ -99,7 +98,7 @@ version (dgl_use_derelict)
     private __gshared DerelictGLVersion _derelictGLVersion;
 }
 else
-version (dgl_use_glad)
+version (Have_glad_drey)
 {
     public
     {

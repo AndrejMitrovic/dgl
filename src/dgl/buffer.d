@@ -6,16 +6,12 @@
  */
 module dgl.buffer;
 
+import std.exception;
 import std.stdio;
 import std.typecons;
 
-import minilib.core.array;
-import minilib.core.test;
-
 import dgl.attribute;
 import dgl.loader;
-
-import dgl.test.util;
 
 /// All possible OpenGL usage hints
 enum UsageHint
@@ -89,7 +85,7 @@ private struct GLBufferImpl
 {
     this(T)(T[] buffer, UsageHint usageHint)
     {
-        require(usageHint.isValidEnum, "Usage hint is uninitialized.");
+        enforce(usageHint != UsageHint.invalid, "Usage hint is uninitialized.");
 
         glGenBuffers(bufferCount, &_bufferID);
         glBindBuffer(GL_ARRAY_BUFFER, _bufferID);

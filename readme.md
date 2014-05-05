@@ -1,43 +1,30 @@
 # dgl
 
-This is a personal D OpenGL API wrapper library, and a work in progress. It uses [Derelict3] to dynamically load the OpenGL shared libraries, and uses [glfw] in its test-suite for window management.
+This is a personal and minimal D OpenGL wrapper library.
+It uses either [Derelict3] or [glad] to load the OpenGL function pointers.
 
-[Derelict3]: https://github.com/aldacron/Derelict3
-[glfw]: https://github.com/D-Programming-Deimos/glfw
-
-This is a personal library and does not have any feature list / plans / or any guarantees that it will work for you.
-
-Currently it's only tested on Windows 7.
+Only tested on Windows 7.
 
 ## Building
 
-Make sure you're using the latest compiler. Sometimes that even means using the latest git-head version
-(sorry about that).
+Use [dub] to add `dgl` as a dependency to your projects.
 
-Make sure the dependencies can be found either in these environment variables:
+Use one of the two configuration, depending on whether you want to use
+[Derelict3] or [glad] for loading the function pointers:
 
-- `MINLIB_HOME`
-- `DERELICT3_HOME`
-- `DEIMOS_GLFW`
+```
+dub --config=dgl-derelict
 
-Or put the dependencies alongside `dgl`, so the directory structure becomes:
-
-- `dir/dgl`
-- `dir/minilib`
-- `dir/Derelict3`
-- `dir/glfw`
-
-Run the `build.bat` file to both run the unittests and generate a static library in the `bin` subfolder.
-
-## Dependencies
-
-- [minilib](https://github.com/AndrejMitrovic/minilib)
-- [Derelict3](https://github.com/aldacron/Derelict3)
-- [glfw](https://github.com/D-Programming-Deimos/glfw)
+dub --config=dgl-glad
+```
 
 ## License
 
-Distributed under the Boost Software License, Version 1.0.
-See accompanying file LICENSE_1_0.txt or copy [here][BoostLicense].
+Distributed under the [Boost Software License][BoostLicense], Version 1.0.
 
+See the accompanying file [license.txt](https://raw.github.com/AndrejMitrovic/dtk/master/license.txt) or an online copy [here][BoostLicense].
+
+[dub]: http://code.dlang.org/download
 [BoostLicense]: http://www.boost.org/LICENSE_1_0.txt
+[Derelict3]: https://github.com/aldacron/Derelict3
+[glad]: https://github.com/Dav1dde/glad
