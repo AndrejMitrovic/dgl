@@ -22,6 +22,7 @@
                 "derelict-gl3": "~master"
             },
 		},
+
 		{
 			"name": "dgl-glad",
 			"targetType": "staticLibrary",
@@ -30,6 +31,5 @@
                 "glad-drey": ">=0.0.1"
             },
 		},
-
 	]
 }
