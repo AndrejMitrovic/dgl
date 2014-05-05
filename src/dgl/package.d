@@ -15,3 +15,8 @@ public
     import dgl.shader;
     import dgl.uniform;
 }
+
+private
+{
+    import dgl.util;
+}

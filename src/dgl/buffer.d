@@ -12,6 +12,7 @@ import std.typecons;
 
 import dgl.attribute;
 import dgl.loader;
+import dgl.util;
 
 /// All possible OpenGL usage hints
 enum UsageHint
